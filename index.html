@@ -156,7 +156,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div>
 <div class="label">THE VIVU INDEX / 003 — MUSIC</div>
 <div style="font-family:'Anton';font-size:clamp(28px,6vw,64px);line-height:.9;letter-spacing:-.02em;margin-top:8px">MAP THE MOOD</div>
-<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 28 tapes unboxed across 8 moods.</div>
+<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 45 tapes unboxed across 9 moods.</div>
 </div>
 <button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
 </div>
@@ -169,7 +169,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div class="formWrap" id="musicFormWrap"><div style="overflow:hidden"><div class="formCard">
 <div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A TAPE</div><div style="font-size:9px;opacity:.5">VIVU-002</div></div>
 <div style="margin-top:10px"><div class="label">Title</div><input id="mTitle" class="input" placeholder="e.g. Safar"></div>
-<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Artist</div><input id="mArtist" class="input" placeholder="e.g. Mitraz"></div><div style="width:150px"><div class="label">Mood</div><select id="mMood" class="input"><option>PUNJABI</option><option>SLOWED</option><option>HYPNOTIC</option><option>LATE NIGHT</option><option>ENERGY</option><option>CANDY</option><option>12+</option><option>3AM</option></select></div></div>
+<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Artist</div><input id="mArtist" class="input" placeholder="e.g. Mitraz"></div><div style="width:150px"><div class="label">Mood</div><select id="mMood" class="input"><option>PUNJABI</option><option>SLOWED</option><option>HYPNOTIC</option><option>LATE NIGHT</option><option>ENERGY</option><option>CANDY</option><option>12+</option><option>3AM</option><option>😂 INDIAN GOVERNMENT</option></select></div></div>
 <div style="margin-top:8px"><div class="label">Feel</div><input id="mFeel" class="input" placeholder="e.g. 2am window seat"></div>
 <div style="margin-top:12px;text-align:right"><button class="btn" id="mSubmit">UNBOX IT →</button></div>
 </div></div></div>
@@ -363,7 +363,7 @@ async function searchMusic(query){
 }
 document.getElementById('musicSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('musicSearch').value.trim();if(query)searchMusic(query);};
 const musicSearch=document.getElementById('musicSearch');const musicMoodPicker=document.getElementById('musicMoodPicker');
-['ALL','PUNJABI','SLOWED','HYPNOTIC','LATE NIGHT','ENERGY','CANDY','12+','3AM'].forEach(mood=>{const button=document.createElement('button');button.type='button';button.textContent=mood;button.onclick=()=>{if(mood==='ALL'){musicSearch.value='';musicApiGrid.innerHTML='';apiStatus(musicApiStatus,'Choose a mood or type a song to search iTunes.');return;}musicSearch.value=mood.toLowerCase();searchMusic(mood);};musicMoodPicker.appendChild(button);});
+['ALL','PUNJABI','SLOWED','HYPNOTIC','LATE NIGHT','ENERGY','CANDY','12+','3AM','😂 INDIAN GOVERNMENT'].forEach(mood=>{const button=document.createElement('button');button.type='button';button.textContent=mood;button.onclick=()=>{if(mood==='ALL'){musicSearch.value='';musicApiGrid.innerHTML='';apiStatus(musicApiStatus,'Choose a mood or type a song to search iTunes.');return;}musicSearch.value=mood.toLowerCase();searchMusic(mood);};musicMoodPicker.appendChild(button);});
 
 // MUSIC LOGIC
 const musicData=[
@@ -395,11 +395,28 @@ const musicData=[
 {t:"Proper Patola",a:"—",m:"3AM",c:"#111",f:"late-night Punjabi sparkle"},
 {t:"England",a:"—",m:"3AM",c:"#111",f:"far away, still awake"},
 {t:"Crazy4U",a:"—",m:"3AM",c:"#111",f:"one more song before sleep"},
+{t:"Dhanda",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"straight-faced chaos"},
+{t:"Russian Bandana",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"streetlight swagger"},
+{t:"Up To U",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"your move, your rules"},
+{t:"4 Days",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"countdown energy"},
+{t:"Feel",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"mood first, explanation later"},
+{t:"Cartier",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"polished flex"},
+{t:"Jatt",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"bold entrance"},
+{t:"Bandana",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"signature look"},
+{t:"Winning Speech",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"victory lap"},
+{t:"Umbrella",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"rainy-day replay"},
+{t:"New World",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"new rules, same confidence"},
+{t:"Personal",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"keep it personal"},
+{t:"Dealer",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"high-stakes shuffle"},
+{t:"Picasso",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"paint outside the lines"},
+{t:"Galat Bande",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"wrong crowd, right beat"},
+{t:"No Mercy",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"zero hesitation"},
+{t:"Levels",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"raise the bar"},
 ];
 let music=[...musicData];let mActive="ALL";let mOpen=null;
 function renderMusic(){
 const f=document.getElementById('musicFilters');f.innerHTML='';
-["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY","12+","3AM"].forEach(m=>{
+["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY","12+","3AM","😂 INDIAN GOVERNMENT"].forEach(m=>{
 const s=document.createElement('span');s.className='pill'+(m===mActive?' active':'');s.textContent=m;s.onclick=()=>{mActive=m;mOpen=null;renderMusic();};f.appendChild(s);
 });
 const g=document.getElementById('musicGrid');g.innerHTML='';
@@ -432,7 +449,7 @@ mfOpen=!mfOpen;document.getElementById('musicFormWrap').classList.toggle('open',
 document.getElementById('mSubmit').onclick=function(){
 const t=document.getElementById('mTitle').value.trim();if(!t)return alert('title');
 const a=document.getElementById('mArtist').value.trim()||'—';const m=document.getElementById('mMood').value;const f=document.getElementById('mFeel').value.trim()||'late night';
-const colors={PUNJABI:'#FF7A45',SLOWED:'#111',HYPNOTIC:'#1A8B4C','LATE NIGHT':'#111',ENERGY:'#FFD400',CANDY:'#FF7A45'};
+const colors={PUNJABI:'#FF7A45',SLOWED:'#111',HYPNOTIC:'#1A8B4C','LATE NIGHT':'#111',ENERGY:'#FFD400',CANDY:'#FF7A45','12+':'#FFD400','3AM':'#111','😂 INDIAN GOVERNMENT':'#FFD400'};
 music.unshift({t,a,m,c:colors[m],f});mActive='ALL';mOpen=0;mfOpen=false;document.getElementById('musicFormWrap').classList.remove('open');document.getElementById('toggleMusicForm').textContent='+ ADD A TAPE';
 document.getElementById('mTitle').value='';document.getElementById('mArtist').value='';document.getElementById('mFeel').value='';
 renderMusic();
