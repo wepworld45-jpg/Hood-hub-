@@ -59,6 +59,37 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 .btn:hover{transform:rotate(-1deg) scale(1.05)}
 .bars{display:flex;gap:2px;align-items:end;height:20px;margin-top:10px}
 .bar{width:3px;border-radius:999px;transition:.4s}
+/* LIVE API SHELVES */
+.apiShelf{background:#111;color:#fff;border:1.5px solid #111;border-radius:14px;padding:18px;margin:18px 0 24px;box-shadow:7px 8px 0 rgba(0,0,0,.2)}
+.apiBar{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.apiKicker{color:#FFD400;opacity:1}
+.apiTitle{font-family:'Anton';font-size:clamp(22px,4vw,38px);line-height:.95;margin-top:6px;text-transform:uppercase}
+.apiCopy{font-size:11px;line-height:1.5;opacity:.7;max-width:430px;margin-top:6px}
+.apiForm{display:flex;gap:8px;flex:1;min-width:min(100%,300px);max-width:520px}
+.apiInput{flex:1;min-width:0;border:1.5px solid #fff;border-radius:999px;padding:11px 14px;background:transparent;color:#fff;font:12px 'Space Mono'}
+.apiInput::placeholder{color:#fff;opacity:.55}
+.apiInput:focus{outline:none;background:#fff;color:#111}
+.apiBtn{border:1.5px solid #FFD400;border-radius:999px;padding:10px 14px;background:#FFD400;color:#111;cursor:pointer;font:700 10px 'Space Mono';letter-spacing:.06em;white-space:nowrap}
+.apiBtn:hover{transform:translateY(-2px) rotate(-1deg)}
+.apiStatus{font:10px 'Space Mono';opacity:.65;margin:16px 0 8px;min-height:15px}
+.apiGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.apiCard{background:#fff;color:#111;border:1.5px solid #fff;border-radius:10px;padding:12px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.apiCardTop{display:flex;gap:10px;align-items:flex-start}
+.apiCover{width:54px;height:72px;object-fit:cover;border-radius:5px;background:#eee;flex:0 0 auto}
+.apiMeta{min-width:0}
+.apiCardTitle{font-family:'Anton';font-size:17px;line-height:1;text-transform:uppercase;overflow-wrap:anywhere}
+.apiCardSub{font:10px 'Space Mono';opacity:.65;margin-top:5px;line-height:1.4}
+.apiCardNote{font:12px serif;font-style:italic;line-height:1.35;margin-top:10px}
+.apiActions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.apiAction{border:1.5px solid #111;border-radius:999px;padding:7px 10px;background:#fff;color:#111;cursor:pointer;font:10px 'Space Mono';text-transform:uppercase}
+.apiAction.primary{background:#111;color:#fff}
+.apiAction:hover{transform:translateY(-2px)}
+.apiSource{font:9px 'Space Mono';opacity:.5;text-transform:uppercase}
+.nowPlaying{display:none;align-items:center;gap:12px;padding:10px 12px;margin:10px 0 14px;background:#FFD400;color:#111;border-radius:9px;font:10px 'Space Mono'}
+.nowPlaying.show{display:flex}
+.nowPlaying strong{font-family:'Anton';font-size:16px;letter-spacing:.01em}
+.nowPlaying audio{width:min(360px,100%);height:30px;margin-left:auto}
+@media(max-width:640px){.apiForm{max-width:none;min-width:100%}.apiBtn{padding-inline:10px}.nowPlaying{align-items:flex-start;flex-wrap:wrap}.nowPlaying audio{width:100%;margin-left:0}}
 </style></head><body>
 
 <!-- HERO -->
@@ -89,6 +120,10 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 </div>
 <button class="toggle" id="toggleBookForm">+ ADD A KEEPER</button>
 </div>
+<div class="apiShelf" aria-label="Open Library search">
+<div class="apiBar"><div><div class="label apiKicker">OPEN LIBRARY / LIVE SEARCH</div><div class="apiTitle">Find a keeper</div><div class="apiCopy">Search millions of book records, preview the cover, and save a discovery to your VIVU index.</div></div><form class="apiForm" id="bookSearchForm"><input class="apiInput" id="bookSearch" placeholder="Search title, author, or idea" autocomplete="off"><button class="apiBtn" type="submit">SEARCH BOOKS</button></form></div>
+<div class="apiStatus" id="bookApiStatus">Ready when you are. Try “design”, “money”, or “Bhagavad Gita”.</div><div class="apiGrid" id="bookApiGrid"></div>
+</div>
 <div class="formWrap" id="bookFormWrap"><div style="overflow:hidden"><div class="formCard">
 <div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A KEEPER</div><div style="font-size:9px;opacity:.5;letter-spacing:.12em">VIVU-001</div></div>
 <div style="margin-top:10px"><div class="label">Title</div><input id="bTitle" class="input" placeholder="e.g. The Psychology of Money"></div>
@@ -111,6 +146,10 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 18 tapes unboxed.</div>
 </div>
 <button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
+</div>
+<div class="apiShelf" aria-label="Radio Browser live music search">
+<div class="apiBar"><div><div class="label apiKicker">RADIO BROWSER / LIVE STREAMS</div><div class="apiTitle">Play the mood</div><div class="apiCopy">Find a live station by genre, city, or energy. Press play on a result to listen without leaving the hub.</div></div><form class="apiForm" id="musicSearchForm"><input class="apiInput" id="musicSearch" placeholder="Try jazz, punjabi, lo-fi, or India" autocomplete="off"><button class="apiBtn" type="submit">FIND MUSIC</button></form></div>
+<div class="nowPlaying" id="nowPlaying"><span>NOW PLAYING</span><strong id="nowPlayingTitle">—</strong><audio id="radioPlayer" controls preload="none"></audio></div><div class="apiStatus" id="musicApiStatus">Ready when you are. Search for a station to start listening.</div><div class="apiGrid" id="musicApiGrid"></div>
 </div>
 <div class="formWrap" id="musicFormWrap"><div style="overflow:hidden"><div class="formCard">
 <div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A TAPE</div><div style="font-size:9px;opacity:.5">VIVU-002</div></div>
@@ -204,6 +243,81 @@ g.appendChild(d);
 }
 renderBooks();
 
+// LIVE API LOGIC
+const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+const bookApiStatus=document.getElementById('bookApiStatus');
+const bookApiGrid=document.getElementById('bookApiGrid');
+const musicApiStatus=document.getElementById('musicApiStatus');
+const musicApiGrid=document.getElementById('musicApiGrid');
+const radioPlayer=document.getElementById('radioPlayer');
+const nowPlaying=document.getElementById('nowPlaying');
+const nowPlayingTitle=document.getElementById('nowPlayingTitle');
+let bookSearchController=null;
+let musicSearchController=null;
+let bookApiResults=[];
+let musicApiResults=[];
+
+function apiStatus(node,message){node.textContent=message;}
+function addBookFromApi(book){
+  const title=book.title||'Untitled keeper';
+  const author=(book.author_name||[])[0]||'Unknown author';
+  const note=(book.subject||[]).slice(0,3).join(' • ')||'A new idea for the index.';
+  books.unshift({t:title,a:author,th:note,m:'PHILOSOPHY',c:'#1A8B4C',n:`Found through Open Library${book.first_publish_year?' · '+book.first_publish_year:''}`});
+  bActive='ALL';bOpen=0;renderBooks();
+  apiStatus(bookApiStatus,`Saved “${title}” to your keepers.`);
+}
+function renderBookApi(){
+  bookApiGrid.innerHTML=bookApiResults.map((book,index)=>{
+    const cover=book.cover_i?`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`:'';
+    const author=(book.author_name||[]).slice(0,2).join(', ')||'Unknown author';
+    const year=book.first_publish_year?` · ${book.first_publish_year}`:'';
+    const subjects=(book.subject||[]).slice(0,2).join(' · ')||'Open Library record';
+    return `<article class="apiCard"><div><div class="apiCardTop">${cover?`<img class="apiCover" loading="lazy" src="${escapeHtml(cover)}" alt="">`:''}<div class="apiMeta"><div class="apiCardTitle">${escapeHtml(book.title||'Untitled')}</div><div class="apiCardSub">${escapeHtml(author+year)}</div></div></div><div class="apiCardNote">${escapeHtml(subjects)}</div></div><div class="apiActions"><span class="apiSource">Open Library</span><button class="apiAction primary" data-book-index="${index}">SAVE KEEPER</button></div></article>`;
+  }).join('');
+  bookApiGrid.querySelectorAll('[data-book-index]').forEach(button=>button.onclick=()=>addBookFromApi(bookApiResults[Number(button.dataset.bookIndex)]));
+}
+async function searchBooks(query){
+  if(bookSearchController)bookSearchController.abort();
+  bookSearchController=new AbortController();
+  apiStatus(bookApiStatus,'Searching Open Library…');bookApiGrid.innerHTML='';
+  try{
+    const url=`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8&fields=title,author_name,first_publish_year,cover_i,subject`;
+    const response=await fetch(url,{signal:bookSearchController.signal});
+    if(!response.ok)throw new Error('Open Library returned an error');
+    const data=await response.json();bookApiResults=data.docs||[];renderBookApi();
+    apiStatus(bookApiStatus,bookApiResults.length?`${bookApiResults.length} keepers found · tap SAVE KEEPER to add one.`:'No keepers found. Try another search.');
+  }catch(error){if(error.name!=='AbortError'){apiStatus(bookApiStatus,'Books are taking a quiet moment. Please try again.');}}
+}
+document.getElementById('bookSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('bookSearch').value.trim();if(query)searchBooks(query);};
+
+function playStation(station){
+  const stream=station.url_resolved||station.url;
+  if(!stream)return;
+  radioPlayer.src=stream;radioPlayer.play().catch(()=>{});nowPlayingTitle.textContent=station.name||'Live station';nowPlaying.classList.add('show');
+  apiStatus(musicApiStatus,`Streaming ${station.name||'live station'} · use the player above to pause or change volume.`);
+}
+function saveStation(station){
+  music.unshift({t:station.name||'Live station',a:station.country||'Radio Browser',m:'LATE NIGHT',c:'#111',f:'live from the open radio index',streamUrl:station.url_resolved||station.url});
+  mActive='ALL';mOpen=0;renderMusic();apiStatus(musicApiStatus,`Saved “${station.name||'Live station'}” to your tapes.`);
+}
+function renderMusicApi(){
+  musicApiGrid.innerHTML=musicApiResults.map((station,index)=>`<article class="apiCard"><div><div class="apiCardTop"><div class="apiMeta"><div class="apiCardTitle">${escapeHtml(station.name||'Live station')}</div><div class="apiCardSub">${escapeHtml([station.country,station.language,station.tags].filter(Boolean).join(' · ')||'Internet radio')}</div></div></div><div class="apiCardNote">${escapeHtml(station.favicon?'A live stream from Radio Browser.':'Open radio stream ready to play.')}</div></div><div class="apiActions"><span class="apiSource">Radio Browser</span><span style="display:flex;gap:6px"><button class="apiAction primary" data-play-index="${index}">PLAY</button><button class="apiAction" data-save-index="${index}">SAVE</button></span></div></article>`).join('');
+  musicApiGrid.querySelectorAll('[data-play-index]').forEach(button=>button.onclick=()=>playStation(musicApiResults[Number(button.dataset.playIndex)]));
+  musicApiGrid.querySelectorAll('[data-save-index]').forEach(button=>button.onclick=()=>saveStation(musicApiResults[Number(button.dataset.saveIndex)]));
+}
+async function searchMusic(query){
+  if(musicSearchController)musicSearchController.abort();
+  musicSearchController=new AbortController();apiStatus(musicApiStatus,'Tuning into Radio Browser…');musicApiGrid.innerHTML='';
+  try{
+    const url=`https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=8&hidebroken=true&order=clickcount&reverse=true`;
+    const response=await fetch(url,{signal:musicSearchController.signal,headers:{Accept:'application/json'}});
+    if(!response.ok)throw new Error('Radio Browser returned an error');
+    const data=await response.json();musicApiResults=(data||[]).filter(station=>station.url_resolved||station.url).slice(0,8);renderMusicApi();
+    apiStatus(musicApiStatus,musicApiResults.length?`${musicApiResults.length} live stations found · press PLAY to listen.`:'No stations found. Try jazz, lo-fi, or a city.');
+  }catch(error){if(error.name!=='AbortError'){apiStatus(musicApiStatus,'Music is taking a quiet moment. Please try again.');}}
+}
+document.getElementById('musicSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('musicSearch').value.trim();if(query)searchMusic(query);};
+
 // MUSIC LOGIC
 const musicData=[
 {t:"Mila",a:"Cerna",m:"CANDY",c:"#FF7A45",f:"warm + loopable"},
@@ -235,8 +349,8 @@ const g=document.getElementById('musicGrid');g.innerHTML='';
 music.filter(b=>mActive==="ALL"||b.m===mActive).forEach((b,i)=>{
 const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=mOpen===i;
 const d=document.createElement('div');d.className='card'+(open?' open':'');d.style.transform=`rotate(${open?0:rot}deg) scale(${open?1.08:sc})`;
-d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a}</div></div><div class="mood" style="background:${b.c};color:${b.m==='ENERGY'||b.m==='CANDY'?'#111':'#fff'}">${b.m}</div></div><div class="bars">${Array.from({length:open?22:14}).map((_,k)=>`<div class="bar" style="height:${4+(k*7+i*11)%16}px;background:${b.c};opacity:${open?0.9-k*0.02:.7}"></div>`).join('')}</div><div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">FEEL</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.f}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>♪ —</span><span>${open?'close':'unbox'}</span></div></div>`;
-d.onclick=()=>{mOpen=open?null:i;renderMusic();};
+d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a}</div></div><div class="mood" style="background:${b.c};color:${b.m==='ENERGY'||b.m==='CANDY'?'#111':'#fff'}">${b.m}</div></div><div class="bars">${Array.from({length:open?22:14}).map((_,k)=>`<div class="bar" style="height:${4+(k*7+i*11)%16}px;background:${b.c};opacity:${open?0.9-k*0.02:.7}"></div>`).join('')}</div>${b.streamUrl?`<button class="apiAction primary streamSaved" style="margin-top:10px" type="button">PLAY LIVE STREAM</button>`:''}<div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">FEEL</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.f}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>♪ —</span><span>${open?'close':'unbox'}</span></div></div>`;
+d.onclick=event=>{if(event.target.classList.contains('streamSaved')){event.stopPropagation();playStation(b);return;}mOpen=open?null:i;renderMusic();};
 g.appendChild(d);
 });
 }
