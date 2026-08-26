@@ -292,12 +292,12 @@ document.getElementById('bookSearchForm').onsubmit=event=>{event.preventDefault(
 
 function playStation(station){
   const stream=station.url_resolved||station.url;
-  if(!stream)return;
+  if(!stream||!stream.startsWith('https://')){apiStatus(musicApiStatus,'This station is not HTTPS-compatible. Please choose another result.');return;}
   radioPlayer.src=stream;radioPlayer.play().catch(()=>{});nowPlayingTitle.textContent=station.name||'Live station';nowPlaying.classList.add('show');
   apiStatus(musicApiStatus,`Streaming ${station.name||'live station'} · use the player above to pause or change volume.`);
 }
 function saveStation(station){
-  music.unshift({t:station.name||'Live station',a:station.country||'Radio Browser',m:'LATE NIGHT',c:'#111',f:'live from the open radio index',streamUrl:station.url_resolved||station.url});
+  music.unshift({t:station.name||'Live station',a:station.country||'Radio Browser',m:'LATE NIGHT',c:'#111',f:'live HTTPS stream from the open radio index',streamUrl:station.url_resolved});
   mActive='ALL';mOpen=0;renderMusic();apiStatus(musicApiStatus,`Saved “${station.name||'Live station'}” to your tapes.`);
 }
 function renderMusicApi(){
@@ -309,11 +309,11 @@ async function searchMusic(query){
   if(musicSearchController)musicSearchController.abort();
   musicSearchController=new AbortController();apiStatus(musicApiStatus,'Tuning into Radio Browser…');musicApiGrid.innerHTML='';
   try{
-    const url=`https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=8&hidebroken=true&order=clickcount&reverse=true`;
+    const url=`https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=8&hidebroken=true&https=true&order=clickcount&reverse=true`;
     const response=await fetch(url,{signal:musicSearchController.signal,headers:{Accept:'application/json'}});
     if(!response.ok)throw new Error('Radio Browser returned an error');
-    const data=await response.json();musicApiResults=(data||[]).filter(station=>station.url_resolved||station.url).slice(0,8);renderMusicApi();
-    apiStatus(musicApiStatus,musicApiResults.length?`${musicApiResults.length} live stations found · press PLAY to listen.`:'No stations found. Try jazz, lo-fi, or a city.');
+    const data=await response.json();musicApiResults=(data||[]).filter(station=>station.ssl&&station.url_resolved&&station.url_resolved.startsWith('https://')).slice(0,8);renderMusicApi();
+    apiStatus(musicApiStatus,musicApiResults.length?`${musicApiResults.length} live stations found · press PLAY to listen.`:'No HTTPS stations found. Try jazz, lo-fi, classical, or a city.');
   }catch(error){if(error.name!=='AbortError'){apiStatus(musicApiStatus,'Music is taking a quiet moment. Please try again.');}}
 }
 document.getElementById('musicSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('musicSearch').value.trim();if(query)searchMusic(query);};
