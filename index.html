@@ -155,7 +155,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div>
 <div class="label">THE VIVU INDEX / 003 — MUSIC</div>
 <div style="font-family:'Anton';font-size:clamp(28px,6vw,64px);line-height:.9;letter-spacing:-.02em;margin-top:8px">MAP THE MOOD</div>
-<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 18 tapes unboxed.</div>
+<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 28 tapes unboxed across 8 moods.</div>
 </div>
 <button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
 </div>
@@ -168,7 +168,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div class="formWrap" id="musicFormWrap"><div style="overflow:hidden"><div class="formCard">
 <div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A TAPE</div><div style="font-size:9px;opacity:.5">VIVU-002</div></div>
 <div style="margin-top:10px"><div class="label">Title</div><input id="mTitle" class="input" placeholder="e.g. Safar"></div>
-<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Artist</div><input id="mArtist" class="input" placeholder="e.g. Mitraz"></div><div style="width:150px"><div class="label">Mood</div><select id="mMood" class="input"><option>PUNJABI</option><option>SLOWED</option><option>HYPNOTIC</option><option>LATE NIGHT</option><option>ENERGY</option><option>CANDY</option></select></div></div>
+<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Artist</div><input id="mArtist" class="input" placeholder="e.g. Mitraz"></div><div style="width:150px"><div class="label">Mood</div><select id="mMood" class="input"><option>PUNJABI</option><option>SLOWED</option><option>HYPNOTIC</option><option>LATE NIGHT</option><option>ENERGY</option><option>CANDY</option><option>12+</option><option>3AM</option></select></div></div>
 <div style="margin-top:8px"><div class="label">Feel</div><input id="mFeel" class="input" placeholder="e.g. 2am window seat"></div>
 <div style="margin-top:12px;text-align:right"><button class="btn" id="mSubmit">UNBOX IT →</button></div>
 </div></div></div>
@@ -352,7 +352,7 @@ async function searchMusic(query){
 }
 document.getElementById('musicSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('musicSearch').value.trim();if(query)searchMusic(query);};
 const musicSearch=document.getElementById('musicSearch');const musicMoodPicker=document.getElementById('musicMoodPicker');
-['ALL','PUNJABI','SLOWED','HYPNOTIC','LATE NIGHT','ENERGY','CANDY'].forEach(mood=>{const button=document.createElement('button');button.type='button';button.textContent=mood;button.onclick=()=>{if(mood==='ALL'){musicSearch.value='';musicApiGrid.innerHTML='';apiStatus(musicApiStatus,'Choose a mood or type a song to search iTunes.');return;}musicSearch.value=mood.toLowerCase();searchMusic(mood);};musicMoodPicker.appendChild(button);});
+['ALL','PUNJABI','SLOWED','HYPNOTIC','LATE NIGHT','ENERGY','CANDY','12+','3AM'].forEach(mood=>{const button=document.createElement('button');button.type='button';button.textContent=mood;button.onclick=()=>{if(mood==='ALL'){musicSearch.value='';musicApiGrid.innerHTML='';apiStatus(musicApiStatus,'Choose a mood or type a song to search iTunes.');return;}musicSearch.value=mood.toLowerCase();searchMusic(mood);};musicMoodPicker.appendChild(button);});
 
 // MUSIC LOGIC
 const musicData=[
@@ -374,11 +374,21 @@ const musicData=[
 {t:"Life",a:"Akhil",m:"PUNJABI",c:"#FF7A45",f:"anthem"},
 {t:"Someone New",a:"Slowed",m:"SLOWED",c:"#111",f:"melancholy + reverb"},
 {t:"Archangel",a:"Slowed",m:"SLOWED",c:"#111",f:"heavenly drag"},
+{t:"8 Asle (Slowed + Reverb)",a:"—",m:"12+",c:"#FFD400",f:"late-night desi glow"},
+{t:"Putt Jatt Da",a:"—",m:"12+",c:"#FFD400",f:"bass up, lights low"},
+{t:"Mi Amor",a:"—",m:"12+",c:"#FFD400",f:"soft after-hours romance"},
+{t:"Brown Rang",a:"—",m:"12+",c:"#FFD400",f:"classic brown-town energy"},
+{t:"GAANI (Slowed + Reverbed)",a:"—",m:"3AM",c:"#111",f:"headphones after midnight"},
+{t:"ROOH",a:"—",m:"3AM",c:"#111",f:"quiet soul, deep night"},
+{t:"Akhiyaan",a:"—",m:"3AM",c:"#111",f:"eyes open, city asleep"},
+{t:"Proper Patola",a:"—",m:"3AM",c:"#111",f:"late-night Punjabi sparkle"},
+{t:"England",a:"—",m:"3AM",c:"#111",f:"far away, still awake"},
+{t:"Crazy4U",a:"—",m:"3AM",c:"#111",f:"one more song before sleep"},
 ];
 let music=[...musicData];let mActive="ALL";let mOpen=null;
 function renderMusic(){
 const f=document.getElementById('musicFilters');f.innerHTML='';
-["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY"].forEach(m=>{
+["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY","12+","3AM"].forEach(m=>{
 const s=document.createElement('span');s.className='pill'+(m===mActive?' active':'');s.textContent=m;s.onclick=()=>{mActive=m;mOpen=null;renderMusic();};f.appendChild(s);
 });
 const g=document.getElementById('musicGrid');g.innerHTML='';
