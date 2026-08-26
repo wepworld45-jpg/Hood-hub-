@@ -71,7 +71,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 .apiInput:focus{outline:none;background:#fff;color:#111}
 .apiBtn{border:1.5px solid #FFD400;border-radius:999px;padding:10px 14px;background:#FFD400;color:#111;cursor:pointer;font:700 10px 'Space Mono';letter-spacing:.06em;white-space:nowrap}
 .apiBtn:hover{transform:translateY(-2px) rotate(-1deg)}
-.moodPicker{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 2px}.moodPicker button{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 10px;background:transparent;color:#fff;cursor:pointer;font:9px 'Space Mono';letter-spacing:.05em;transition:all .18s ease}.moodPicker button:hover{background:#FFD400;color:#111;border-color:#FFD400;transform:translateY(-1px)}
+.moodPicker{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 2px}.moodPicker button{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 10px;background:transparent;color:#fff;cursor:pointer;font:9px 'Space Mono';letter-spacing:.05em;transition:all .18s ease}.moodPicker button:hover{background:#FFD400;color:#111;border-color:#FFD400;transform:translateY(-1px)}.moodPlaylists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0 4px}.moodPlaylistButton{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border:1.5px solid rgba(255,255,255,.42);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;text-align:left;cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease;border-left:6px solid #FFD400}.moodPlaylistButton:nth-child(2){border-left-color:#FF7A45}.moodPlaylistButton:hover,.moodPlaylistButton.active{background:#FFD400;color:#111;border-color:#FFD400;transform:translateY(-3px);box-shadow:5px 6px 0 rgba(255,255,255,.14)}.moodPlaylistButton:nth-child(2):hover,.moodPlaylistButton:nth-child(2).active{background:#FF7A45;color:#111;border-color:#FF7A45}.moodPlaylistButton .playlistIcon{font:19px/1 'Anton';width:24px}.moodPlaylistButton .playlistCopy{display:flex;flex-direction:column;gap:4px;flex:1}.moodPlaylistButton strong{font:16px/1 'Anton';letter-spacing:.02em}.moodPlaylistButton small{font:8px 'Space Mono';letter-spacing:.08em;opacity:.72}.moodPlaylistButton .playlistArrow{font:16px 'Space Mono'}@media(max-width:640px){.moodPlaylists{grid-template-columns:1fr}}
 .apiStatus{font:10px 'Space Mono';opacity:.65;margin:16px 0 8px;min-height:15px}
 .apiGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
 .apiCard{background:#fff;color:#111;border:1.5px solid #fff;border-radius:10px;padding:12px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
@@ -161,7 +161,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
 </div>
 <div class="apiShelf" aria-label="iTunes 30-second music previews">
-<div class="apiBar"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the mood</div><div class="apiCopy">Find a matching song by title or artist. Press PREVIEW 30S to hear Apple’s official sample, or open the full song in Apple Music.</div></div><form class="apiForm" id="musicSearchForm"><input class="apiInput" id="musicSearch" placeholder="Try Safar, Mitraz, Punjabi, or lo-fi" autocomplete="off"><button class="apiBtn" type="submit">FIND PREVIEWS</button></form></div><div class="moodPicker" id="musicMoodPicker" aria-label="Search music by mood"></div>
+<div class="apiBar"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the mood</div><div class="apiCopy">Find a matching song by title or artist. Press PREVIEW 30S to hear Apple’s official sample, or open the full song in Apple Music.</div></div><form class="apiForm" id="musicSearchForm"><input class="apiInput" id="musicSearch" placeholder="Try Safar, Mitraz, Punjabi, or lo-fi" autocomplete="off"><button class="apiBtn" type="submit">FIND PREVIEWS</button></form></div><div class="moodPlaylists" aria-label="Featured mood playlists"><button class="moodPlaylistButton" data-playlist-mood="3AM" type="button" aria-pressed="false"><span class="playlistIcon">☾</span><span class="playlistCopy"><strong>3AM</strong><small>6 TAPES · QUIET SOUL</small></span><span class="playlistArrow">→</span></button><button class="moodPlaylistButton" data-playlist-mood="12+" type="button" aria-pressed="false"><span class="playlistIcon">+</span><span class="playlistCopy"><strong>12+</strong><small>4 TAPES · LATE-NIGHT GLOW</small></span><span class="playlistArrow">→</span></button></div><div class="moodPicker" id="musicMoodPicker" aria-label="Search music by mood"></div>
 <div class="songPlayerBox"><div><div class="label apiKicker">VIVUHUB / BUILT-IN TRACK</div><div class="apiTitle">Play a song</div><div class="apiCopy">Press PLAY SONG to listen instantly. This public-domain beat is stored with the site, so it does not depend on a radio station.</div></div><div class="songControls"><button class="songPlayBtn" id="playSongBtn" type="button">▶ PLAY SONG</button><audio class="songPlayer" id="songPlayer" controls preload="metadata"><source src="assets/beat-electronic.ogg" type="audio/ogg"></audio></div></div>
 <div class="officialTrack"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the exact song</div><div class="apiCopy">Each Music card searches iTunes using its title and artist, then plays the matching 30-second preview. Use the Apple Music link for the full song.</div></div><div class="apiSource">Official Apple preview source</div></div>
 <div class="nowPlaying" id="nowPlaying"><span>NOW PLAYING</span><strong id="nowPlayingTitle">—</strong><audio id="radioPlayer" controls preload="none"></audio></div><div class="apiStatus" id="musicApiStatus">Ready when you are. Search for a matching song preview.</div><div class="apiGrid" id="musicApiGrid"></div>
@@ -414,11 +414,13 @@ const musicData=[
 {t:"Levels",a:"—",m:"😂 INDIAN GOVERNMENT",c:"#FFD400",f:"raise the bar"},
 ];
 let music=[...musicData];let mActive="ALL";let mOpen=null;let activeMusicCard=null;
+function syncMoodPlaylistButtons(){document.querySelectorAll('[data-playlist-mood]').forEach(button=>{const active=button.dataset.playlistMood===mActive;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});}
 function renderMusic(){
 const f=document.getElementById('musicFilters');f.innerHTML='';
 ["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY","12+","3AM","😂 INDIAN GOVERNMENT"].forEach(m=>{
 const s=document.createElement('span');s.className='pill'+(m===mActive?' active':'');s.textContent=m;s.onclick=()=>{mActive=m;mOpen=null;renderMusic();};f.appendChild(s);
 });
+syncMoodPlaylistButtons();
 const g=document.getElementById('musicGrid');g.innerHTML='';
 music.filter(b=>mActive==="ALL"||b.m===mActive).forEach((b,i)=>{
 const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=mOpen===i;
@@ -430,6 +432,7 @@ g.appendChild(d);
 });
 }
 renderMusic();
+document.querySelectorAll('[data-playlist-mood]').forEach(button=>button.onclick=()=>{mActive=button.dataset.playlistMood;mOpen=null;renderMusic();document.getElementById('musicGrid').scrollIntoView({behavior:'smooth',block:'start'});});
 
 // forms
 let bfOpen=false,mfOpen=false;
