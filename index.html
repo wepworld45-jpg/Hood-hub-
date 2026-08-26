@@ -11,7 +11,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 .grain{position:absolute;inset:0;pointer-events:none;z-index:50;opacity:.4;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");background-size:200px 200px;background-repeat:repeat}
 .ghost{position:absolute;inset-inline:0;top:18%;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;font-family:'Anton',sans-serif;font-size:clamp(90px,28vw,380px);font-weight:900;color:#fff;line-height:1;text-transform:uppercase;letter-spacing:-.02em;white-space:nowrap}
 .brand{position:absolute;top:24px;left:16px;z-index:60;font-size:12px;font-weight:600;text-transform:uppercase;color:#fff;opacity:.9;letter-spacing:.18em}
-@media(min-width:640px){.brand{left:32px}}
+@media(min-width:640px){.brand{left:32px}}.themeSwitcher{position:absolute;top:18px;right:16px;z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:7px;color:#fff}.themeTitle{font:8px 'Space Mono';letter-spacing:.14em;opacity:.72}.themeChoices{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:250px}.themeButton{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(0,0,0,.14);color:#fff;backdrop-filter:blur(8px);cursor:pointer;font:8px 'Space Mono';letter-spacing:.06em;transition:transform .2s ease,background .2s ease,border-color .2s ease}.themeButton::before{content:"";display:block;width:9px;height:9px;border-radius:50%;background:var(--swatch,#fff);border:1px solid rgba(255,255,255,.7)}.themeButton:hover,.themeButton.active{background:#FFD400;color:#111;border-color:#FFD400;transform:translateY(-2px)}.themeButton.active::before{border-color:#111}@media(max-width:640px){.themeSwitcher{top:56px;right:16px}.themeChoices{max-width:210px}}
 .carousel{position:absolute;inset:0;z-index:3}
 .fig{position:absolute;aspect-ratio:.6/1;will-change:transform,filter,opacity;transition:transform 650ms cubic-bezier(.4,0,.2,1),filter 650ms cubic-bezier(.4,0,.2,1),opacity 650ms cubic-bezier(.4,0,.2,1),left 650ms cubic-bezier(.4,0,.2,1);isolation:isolate}.fig::before{content:"";position:absolute;inset:9% 16% 2%;z-index:-1;border-radius:48% 48% 18% 18%;background:linear-gradient(110deg,rgba(255,255,255,.08) 28%,rgba(255,255,255,.42) 48%,rgba(255,255,255,.08) 68%);background-size:220% 100%;filter:blur(14px);opacity:0;transition:opacity 300ms ease;animation:figureSweep 1.35s linear infinite}.fig.loading::before{opacity:.85}.fig img{width:100%;height:100%;object-fit:contain;object-position:bottom center;display:block;user-select:none;-webkit-user-drag:none;opacity:0;transform:translateY(8px) scale(.985);transition:opacity 480ms ease,transform 650ms cubic-bezier(.22,1,.36,1)}.fig.loaded img{opacity:1;transform:translateY(0) scale(1)}.fig.failed::before{opacity:0}@keyframes figureSweep{0%{background-position:200% 0}100%{background-position:-20% 0}}@media(prefers-reduced-motion:reduce){.fig::before{animation:none}.fig img{transition:none}}
 .bottomLeft{position:absolute;bottom:24px;left:16px;z-index:60;max-width:320px}
@@ -109,6 +109,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <div class="grain"></div>
 <div class="ghost">3D SHAPE</div>
 <div class="brand">VIVUHUB</div>
+<div class="themeSwitcher" id="themeSwitcher" aria-label="Choose a background theme"><div class="themeTitle">BACKDROP / MOOD</div><div class="themeChoices"><button class="themeButton" data-theme="auto" type="button" aria-pressed="false" style="--swatch:#F4845F">AUTO</button><button class="themeButton" data-theme="3am" type="button" aria-pressed="false" style="--swatch:#14142D">3AM</button><button class="themeButton" data-theme="12plus" type="button" aria-pressed="false" style="--swatch:#8C6B00">12+</button><button class="themeButton" data-theme="candy" type="button" aria-pressed="false" style="--swatch:#7A234E">CANDY</button><button class="themeButton" data-theme="mint" type="button" aria-pressed="false" style="--swatch:#0E513A">MINT</button></div></div>
 <div class="carousel" id="carousel"></div>
 <div class="bottomLeft">
 <div class="bLeftTitle">VIVUHUB FIGURINES</div>
@@ -190,6 +191,10 @@ IMAGES.forEach(o=>{const i=new Image();i.src=o.src});
 let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640;
 window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;renderHero();});
 const hero=document.getElementById('hero');const carousel=document.getElementById('carousel');
+const themePresets={auto:{bg:null},'3am':{bg:'#14142D'},'12plus':{bg:'#8C6B00'},candy:{bg:'#7A234E'},mint:{bg:'#0E513A'}};
+let activeTheme='auto';try{activeTheme=localStorage.getItem('vivuhub-theme')||'auto';}catch(error){}
+function applyTheme(){const theme=themePresets[activeTheme]||themePresets.auto;hero.dataset.theme=activeTheme;hero.style.backgroundColor=theme.bg||IMAGES[activeIndex].bg;document.querySelectorAll('[data-theme]').forEach(button=>{const active=button.dataset.theme===activeTheme;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});try{localStorage.setItem('vivuhub-theme',activeTheme);}catch(error){}}
+document.querySelectorAll('[data-theme]').forEach(button=>button.onclick=()=>{activeTheme=button.dataset.theme;applyTheme();});
 function navigate(dir){
 if(isAnimating)return;
 isAnimating=true;
@@ -198,7 +203,7 @@ renderHero();
 setTimeout(()=>isAnimating=false,650);
 }
 function renderHero(){
-hero.style.backgroundColor=IMAGES[activeIndex].bg;
+applyTheme();
 carousel.innerHTML='';
 const roles={center:activeIndex,left:(activeIndex+3)%4,right:(activeIndex+1)%4,back:(activeIndex+2)%4};
 Object.entries(roles).forEach(([role,idx])=>{
