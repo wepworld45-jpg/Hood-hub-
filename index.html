@@ -71,6 +71,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 .apiInput:focus{outline:none;background:#fff;color:#111}
 .apiBtn{border:1.5px solid #FFD400;border-radius:999px;padding:10px 14px;background:#FFD400;color:#111;cursor:pointer;font:700 10px 'Space Mono';letter-spacing:.06em;white-space:nowrap}
 .apiBtn:hover{transform:translateY(-2px) rotate(-1deg)}
+.moodPicker{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 2px}.moodPicker button{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 10px;background:transparent;color:#fff;cursor:pointer;font:9px 'Space Mono';letter-spacing:.05em;transition:all .18s ease}.moodPicker button:hover{background:#FFD400;color:#111;border-color:#FFD400;transform:translateY(-1px)}
 .apiStatus{font:10px 'Space Mono';opacity:.65;margin:16px 0 8px;min-height:15px}
 .apiGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
 .apiCard{background:#fff;color:#111;border:1.5px solid #fff;border-radius:10px;padding:12px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
@@ -159,7 +160,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
 <button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
 </div>
 <div class="apiShelf" aria-label="iTunes 30-second music previews">
-<div class="apiBar"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the mood</div><div class="apiCopy">Find a matching song by title or artist. Press PREVIEW 30S to hear Apple’s official sample, or open the full song in Apple Music.</div></div><form class="apiForm" id="musicSearchForm"><input class="apiInput" id="musicSearch" placeholder="Try Safar, Mitraz, Punjabi, or lo-fi" autocomplete="off"><button class="apiBtn" type="submit">FIND PREVIEWS</button></form></div>
+<div class="apiBar"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the mood</div><div class="apiCopy">Find a matching song by title or artist. Press PREVIEW 30S to hear Apple’s official sample, or open the full song in Apple Music.</div></div><form class="apiForm" id="musicSearchForm"><input class="apiInput" id="musicSearch" placeholder="Try Safar, Mitraz, Punjabi, or lo-fi" autocomplete="off"><button class="apiBtn" type="submit">FIND PREVIEWS</button></form></div><div class="moodPicker" id="musicMoodPicker" aria-label="Search music by mood"></div>
 <div class="songPlayerBox"><div><div class="label apiKicker">VIVUHUB / BUILT-IN TRACK</div><div class="apiTitle">Play a song</div><div class="apiCopy">Press PLAY SONG to listen instantly. This public-domain beat is stored with the site, so it does not depend on a radio station.</div></div><div class="songControls"><button class="songPlayBtn" id="playSongBtn" type="button">▶ PLAY SONG</button><audio class="songPlayer" id="songPlayer" controls preload="metadata"><source src="assets/beat-electronic.ogg" type="audio/ogg"></audio></div></div>
 <div class="officialTrack"><div><div class="label apiKicker">ITUNES / 30-SECOND PREVIEWS</div><div class="apiTitle">Preview the exact song</div><div class="apiCopy">Each Music card searches iTunes using its title and artist, then plays the matching 30-second preview. Use the Apple Music link for the full song.</div></div><div class="apiSource">Official Apple preview source</div></div>
 <div class="nowPlaying" id="nowPlaying"><span>NOW PLAYING</span><strong id="nowPlayingTitle">—</strong><audio id="radioPlayer" controls preload="none"></audio></div><div class="apiStatus" id="musicApiStatus">Ready when you are. Search for a matching song preview.</div><div class="apiGrid" id="musicApiGrid"></div>
@@ -350,6 +351,8 @@ async function searchMusic(query){
   }catch(error){if(error.name!=='AbortError'){apiStatus(musicApiStatus,'iTunes is taking a quiet moment. Please try again.');}}
 }
 document.getElementById('musicSearchForm').onsubmit=event=>{event.preventDefault();const query=document.getElementById('musicSearch').value.trim();if(query)searchMusic(query);};
+const musicSearch=document.getElementById('musicSearch');const musicMoodPicker=document.getElementById('musicMoodPicker');
+['ALL','PUNJABI','SLOWED','HYPNOTIC','LATE NIGHT','ENERGY','CANDY'].forEach(mood=>{const button=document.createElement('button');button.type='button';button.textContent=mood;button.onclick=()=>{if(mood==='ALL'){musicSearch.value='';musicApiGrid.innerHTML='';apiStatus(musicApiStatus,'Choose a mood or type a song to search iTunes.');return;}musicSearch.value=mood.toLowerCase();searchMusic(mood);};musicMoodPicker.appendChild(button);});
 
 // MUSIC LOGIC
 const musicData=[
