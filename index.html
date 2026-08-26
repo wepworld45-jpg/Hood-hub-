@@ -312,7 +312,7 @@ async function searchMusic(query){
     const url=`https://de1.api.radio-browser.info/json/stations/search?name=${encodeURIComponent(query)}&limit=8&hidebroken=true&https=true&order=clickcount&reverse=true`;
     const response=await fetch(url,{signal:musicSearchController.signal,headers:{Accept:'application/json'}});
     if(!response.ok)throw new Error('Radio Browser returned an error');
-    const data=await response.json();musicApiResults=(data||[]).filter(station=>station.ssl&&station.url_resolved&&station.url_resolved.startsWith('https://')).slice(0,8);renderMusicApi();
+    const data=await response.json();musicApiResults=(data||[]).filter(station=>station.url_resolved&&station.url_resolved.startsWith('https://')).slice(0,8);renderMusicApi();
     apiStatus(musicApiStatus,musicApiResults.length?`${musicApiResults.length} live stations found · press PLAY to listen.`:'No HTTPS stations found. Try jazz, lo-fi, classical, or a city.');
   }catch(error){if(error.name!=='AbortError'){apiStatus(musicApiStatus,'Music is taking a quiet moment. Please try again.');}}
 }
