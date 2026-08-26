@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIVUHUB — Complete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',sans-serif;background:#F8F1E8}
+/* HERO */
+#hero{position:relative;width:100%;height:100vh;overflow:hidden;transition:background-color 650ms cubic-bezier(.4,0,.2,1);font-family:'Inter',sans-serif}
+.grain{position:absolute;inset:0;pointer-events:none;z-index:50;opacity:.4;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");background-size:200px 200px;background-repeat:repeat}
+.ghost{position:absolute;inset-inline:0;top:18%;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;font-family:'Anton',sans-serif;font-size:clamp(90px,28vw,380px);font-weight:900;color:#fff;line-height:1;text-transform:uppercase;letter-spacing:-.02em;white-space:nowrap}
+.brand{position:absolute;top:24px;left:16px;z-index:60;font-size:12px;font-weight:600;text-transform:uppercase;color:#fff;opacity:.9;letter-spacing:.18em}
+@media(min-width:640px){.brand{left:32px}}
+.carousel{position:absolute;inset:0;z-index:3}
+.fig{position:absolute;aspect-ratio:.6/1;will-change:transform,filter,opacity;transition:transform 650ms cubic-bezier(.4,0,.2,1),filter 650ms cubic-bezier(.4,0,.2,1),opacity 650ms cubic-bezier(.4,0,.2,1),left 650ms cubic-bezier(.4,0,.2,1)}
+.fig img{width:100%;height:100%;object-fit:contain;object-position:bottom center;display:block;user-select:none;-webkit-user-drag:none}
+.bottomLeft{position:absolute;bottom:24px;left:16px;z-index:60;max-width:320px}
+@media(min-width:640px){.bottomLeft{bottom:80px;left:96px}}
+.bLeftTitle{font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;font-size:16px;color:#fff;opacity:.95}
+@media(min-width:640px){.bLeftTitle{font-size:22px;margin-bottom:12px}}
+.bLeftDesc{font-size:12px;color:#fff;opacity:.85;line-height:1.6;margin-bottom:16px}
+@media(min-width:640px){.bLeftDesc{font-size:14px;margin-bottom:20px}}
+.navBtns{display:flex;gap:16px}
+.circle{width:48px;height:48px;border-radius:9999px;background:transparent;border:2px solid #fff;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform 150ms,background-color 150ms}
+@media(min-width:640px){.circle{width:64px;height:64px}}
+.circle:hover{transform:scale(1.08);background:rgba(255,255,255,.12)}
+.bottomRight{position:absolute;bottom:24px;right:16px;z-index:60}
+@media(min-width:640px){.bottomRight{bottom:80px;right:40px}}
+.discover{display:flex;align-items:center;gap:8px;font-family:'Anton',sans-serif;font-size:clamp(20px,4vw,56px);font-weight:400;color:#fff;opacity:.95;letter-spacing:-.02em;line-height:1;text-transform:uppercase;text-decoration:none;transition:opacity 200ms}
+.discover:hover{opacity:1}
+/* SECTIONS SHARED */
+.dotBg{background:#F8F1E8;background-image:radial-gradient(#111 1.2px,transparent 1.2px);background-size:18px 18px}
+.mono{font-family:'Space Mono',monospace}
+.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.6}
+.pill{border:1.5px solid #111;border-radius:999px;padding:6px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:#fff;transition:.2s;display:inline-block;margin:4px 6px 4px 0;user-select:none;font-family:'Space Mono'}
+.pill.active{background:#111;color:#fff;transform:rotate(-1deg) scale(1.05)}
+.grid{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px;align-items:flex-start}
+.card{width:174px;min-height:126px;background:#fff;border:1.5px solid #111;border-radius:12px;box-shadow:6px 7px 0 #111;cursor:pointer;transition:transform .7s cubic-bezier(.34,1.56,.64,1),box-shadow .7s;position:relative}
+.card:hover{transform:translateY(-4px) rotate(0deg) scale(1.04)!important;box-shadow:8px 10px 0 #111;z-index:5}
+.card.open{width:312px;min-height:210px;transform:rotate(0deg) scale(1.08)!important;z-index:20;box-shadow:10px 14px 0 #111}
+.inner{padding:10px 12px}
+.dot{width:8px;height:8px;border-radius:50%;border:1px solid #111;display:inline-block}
+.title{font-family:'Anton',sans-serif;font-size:14px;text-transform:uppercase;line-height:1.05;letter-spacing:-.01em}
+.sub{font-size:10px;opacity:.6;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Space Mono'}
+.mood{font-size:8px;border:1px solid #111;border-radius:999px;padding:2px 7px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;font-family:'Space Mono'}
+.feel{display:grid;grid-template-rows:0fr;opacity:0;transition:.55s cubic-bezier(.34,1.2,.64,1)}
+.feel.open{grid-template-rows:1fr;opacity:1;margin-top:10px}
+.sectionWrap{max-width:1240px;margin:0 auto;padding:28px 16px 70px}
+.sectionHead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:flex-start;border-bottom:1.5px solid #111;padding-bottom:16px;margin-bottom:16px}
+.toggle{border:1.5px solid #111;background:#fff;border-radius:999px;padding:8px 16px;font-size:11px;text-transform:uppercase;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.2s;font-family:'Space Mono'}
+.toggle:hover{transform:translateY(-2px);box-shadow:6px 6px 0 #111}
+.formWrap{display:grid;grid-template-rows:0fr;opacity:0;transition:.7s cubic-bezier(.34,1.56,.64,1)}
+.formWrap.open{grid-template-rows:1fr;opacity:1;margin:18px 0}
+.formCard{background:#fff;border:1.5px solid #111;border-radius:12px;box-shadow:6px 7px 0 #111;padding:16px;max-width:560px;transform:rotate(-0.4deg)}
+.input{width:100%;border:1.5px solid #111;border-radius:8px;padding:10px 12px;font-family:'Space Mono';font-size:12px;margin-top:6px;box-sizing:border-box}
+.input:focus{background:#111;color:#fff;outline:none}
+.btn{background:#111;color:#fff;border:1.5px solid #111;border-radius:999px;padding:10px 18px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.2s;font-family:'Space Mono'}
+.btn:hover{transform:rotate(-1deg) scale(1.05)}
+.bars{display:flex;gap:2px;align-items:end;height:20px;margin-top:10px}
+.bar{width:3px;border-radius:999px;transition:.4s}
+</style></head><body>
+
+<!-- HERO -->
+<div id="hero">
+<div class="grain"></div>
+<div class="ghost">3D SHAPE</div>
+<div class="brand">VIVUHUB</div>
+<div class="carousel" id="carousel"></div>
+<div class="bottomLeft">
+<div class="bLeftTitle">VIVUHUB FIGURINES</div>
+<div class="bLeftDesc" id="heroDesc">The artwork is stunning, shipped fully prepared. The finish is a vision, the 3D craft is flawless. Many thanks! Wishing you the win. Order now.</div>
+<div class="navBtns">
+<button class="circle" id="prevBtn" aria-label="prev"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+<button class="circle" id="nextBtn" aria-label="next"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><svg width="26" height="26" style="position:absolute;transform:rotate(90deg)" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+</div>
+</div>
+<a class="bottomRight discover" href="#books">DISCOVER IT <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" class="sm:w-8 sm:h-8"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</div>
+
+<!-- BOOKS SECTION -->
+<section id="books" class="dotBg">
+<div class="sectionWrap">
+<div class="sectionHead">
+<div>
+<div class="label">THE VIVU INDEX / 002 — BOOKS</div>
+<div style="font-family:'Anton';font-size:clamp(28px,6vw,64px);line-height:.9;letter-spacing:-.02em;margin-top:8px">MAP THE MIND</div>
+<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Keepers, not homework. A useful book should change what you notice after you close it.</div>
+</div>
+<button class="toggle" id="toggleBookForm">+ ADD A KEEPER</button>
+</div>
+<div class="formWrap" id="bookFormWrap"><div style="overflow:hidden"><div class="formCard">
+<div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A KEEPER</div><div style="font-size:9px;opacity:.5;letter-spacing:.12em">VIVU-001</div></div>
+<div style="margin-top:10px"><div class="label">Title</div><input id="bTitle" class="input" placeholder="e.g. The Psychology of Money"></div>
+<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Author</div><input id="bAuthor" class="input" placeholder="Morgan Housel"></div><div style="width:150px"><div class="label">Mood</div><select id="bMood" class="input"><option>PSYCHOLOGY</option><option>MONEY</option><option>PHILOSOPHY</option><option>DISCIPLINE</option><option>POWER</option><option>HABITS</option></select></div></div>
+<div style="margin-top:8px"><div class="label">Note</div><textarea id="bNote" class="input" style="height:60px" placeholder="What changes after you close it?"></textarea></div>
+<div style="margin-top:12px;text-align:right"><button class="btn" id="bSubmit">UNBOX IT →</button></div>
+</div></div></div>
+<div id="bookFilters"></div>
+<div class="grid" id="bookGrid"></div>
+</div>
+</section>
+
+<!-- MUSIC SECTION -->
+<section id="music" class="dotBg" style="border-top:1.5px solid #111">
+<div class="sectionWrap">
+<div class="sectionHead">
+<div>
+<div class="label">THE VIVU INDEX / 003 — MUSIC</div>
+<div style="font-family:'Anton';font-size:clamp(28px,6vw,64px);line-height:.9;letter-spacing:-.02em;margin-top:8px">MAP THE MOOD</div>
+<div style="font-family:serif;font-style:italic;font-size:13px;margin-top:6px;opacity:.7">Late night, slowed + reverb, punjabi energy. 18 tapes unboxed.</div>
+</div>
+<button class="toggle" id="toggleMusicForm">+ ADD A TAPE</button>
+</div>
+<div class="formWrap" id="musicFormWrap"><div style="overflow:hidden"><div class="formCard">
+<div style="display:flex;justify-content:space-between"><div style="font-family:Anton;font-size:18px">ADD A TAPE</div><div style="font-size:9px;opacity:.5">VIVU-002</div></div>
+<div style="margin-top:10px"><div class="label">Title</div><input id="mTitle" class="input" placeholder="e.g. Safar"></div>
+<div style="margin-top:8px;display:flex;gap:8px"><div style="flex:1"><div class="label">Artist</div><input id="mArtist" class="input" placeholder="e.g. Mitraz"></div><div style="width:150px"><div class="label">Mood</div><select id="mMood" class="input"><option>PUNJABI</option><option>SLOWED</option><option>HYPNOTIC</option><option>LATE NIGHT</option><option>ENERGY</option><option>CANDY</option></select></div></div>
+<div style="margin-top:8px"><div class="label">Feel</div><input id="mFeel" class="input" placeholder="e.g. 2am window seat"></div>
+<div style="margin-top:12px;text-align:right"><button class="btn" id="mSubmit">UNBOX IT →</button></div>
+</div></div></div>
+<div id="musicFilters"></div>
+<div class="grid" id="musicGrid"></div>
+</div>
+</section>
+
+<footer style="background:#111;color:#fff;padding:20px 16px;display:flex;justify-content:space-between" class="mono label"><span>VIVUHUB © 2026 — TOONHUB STYLE</span><span>BOOKS • MUSIC • TOONS</span></footer>
+
+<script>
+const IMAGES=[
+{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/1.02464a56.png',bg:'#F4845F'},
+{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/2.b977faab.png',bg:'#6BBF7A'},
+{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/3.4df853b4.png',bg:'#E882B4'},
+{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/4.4457fbce.png',bg:'#6EB5FF'},
+];
+IMAGES.forEach(o=>{const i=new Image();i.src=o.src});
+let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640;
+window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;renderHero();});
+const hero=document.getElementById('hero');const carousel=document.getElementById('carousel');
+function navigate(dir){
+if(isAnimating)return;
+isAnimating=true;
+activeIndex=dir==='next'?(activeIndex+1)%4:(activeIndex+3)%4;
+renderHero();
+setTimeout(()=>isAnimating=false,650);
+}
+function renderHero(){
+hero.style.backgroundColor=IMAGES[activeIndex].bg;
+carousel.innerHTML='';
+const roles={center:activeIndex,left:(activeIndex+3)%4,right:(activeIndex+1)%4,back:(activeIndex+2)%4};
+Object.entries(roles).forEach(([role,idx])=>{
+const d=document.createElement('div');d.className='fig';
+let style='';
+if(role==='center'){style=`left:50%;height:${isMobile?'60%':'92%'};bottom:${isMobile?'22%':'0'};transform:translateX(-50%) scale(${isMobile?1.25:1.68});filter:none;opacity:1;z-index:20`;}
+else if(role==='left'){style=`left:${isMobile?'20%':'30%'};height:${isMobile?'16%':'28%'};bottom:${isMobile?'32%':'12%'};transform:translateX(-50%) scale(1);filter:blur(2px);opacity:.85;z-index:10`;}
+else if(role==='right'){style=`left:${isMobile?'80%':'70%'};height:${isMobile?'16%':'28%'};bottom:${isMobile?'32%':'12%'};transform:translateX(-50%) scale(1);filter:blur(2px);opacity:.85;z-index:10`;}
+else{style=`left:50%;height:${isMobile?'13%':'22%'};bottom:${isMobile?'32%':'12%'};transform:translateX(-50%) scale(1);filter:blur(4px);opacity:1;z-index:5`;}
+d.style.cssText=style;
+d.innerHTML=`<img src="${IMAGES[idx].src}" draggable="false">`;
+carousel.appendChild(d);
+});
+}
+document.getElementById('prevBtn').onclick=()=>navigate('prev');
+document.getElementById('nextBtn').onclick=()=>navigate('next');
+renderHero();
+
+// BOOKS LOGIC
+const booksData=[
+{t:"Think Like a Monk",a:"Jay Shetty",th:"Attention, inner discipline",m:"PHILOSOPHY",c:"#1A8B4C",n:"Choosing what deserves your mind."},
+{t:"The Obstacle Is the Way",a:"Ryan Holiday",th:"Pressure as material",m:"PHILOSOPHY",c:"#1A8B4C",n:"Difficulty as route."},
+{t:"Think Again",a:"Adam Grant",th:"Updating conclusions",m:"PSYCHOLOGY",c:"#FF7A45",n:"Curiosity to question itself."},
+{t:"The Intelligent Investor",a:"Benjamin Graham",th:"Clarity, patience",m:"MONEY",c:"#FFD400",n:"Not pulled by crowd."},
+{t:"The War of Art",a:"Steven Pressfield",th:"Friction creating",m:"DISCIPLINE",c:"#111",n:"Wanting vs making."},
+{t:"Emotional Intelligence",a:"Daniel Goleman",th:"Inner signals",m:"PSYCHOLOGY",c:"#FF7A45",n:"Signals shape decisions."},
+{t:"The Power of Your Subconscious Mind",a:"Joseph Murphy",th:"Belief patterns",m:"PSYCHOLOGY",c:"#FF7A45",n:"Repeated internally becomes behavior."},
+{t:"As a Man Thinketh",a:"James Allen",th:"Thought shapes reality",m:"PHILOSOPHY",c:"#1A8B4C",n:"Mind as origin."},
+{t:"The Happiest Man on Earth",a:"Eddie Jaku",th:"Resilience",m:"PHILOSOPHY",c:"#1A8B4C",n:"Meaning after loss."},
+{t:"Bhagavad Gita",a:"—",th:"Action duty detachment",m:"PHILOSOPHY",c:"#1A8B4C",n:"Move with clarity."},
+{t:"How to Win Friends",a:"Dale Carnegie",th:"Communication trust",m:"DISCIPLINE",c:"#111",n:"Social mechanics."},
+{t:"The Psychology of Money",a:"Morgan Housel",th:"Behavior patience risk",m:"MONEY",c:"#FFD400",n:"Personal favorite — stories about wealth.",fav:true},
+{t:"Man's Search for Meaning",a:"Viktor Frankl",th:"Purpose under pressure",m:"PHILOSOPHY",c:"#1A8B4C",n:"Meaning as survival."},
+{t:"Atomic Habits",a:"James Clear",th:"Small systems",m:"HABITS",c:"#E882B4",n:"1% daily."},
+{t:"Meditations",a:"Marcus Aurelius",th:"Stoic clarity",m:"PHILOSOPHY",c:"#1A8B4C",n:"Private notes on character."},
+{t:"The 48 Laws of Power",a:"Robert Greene",th:"Power dynamics",m:"POWER",c:"#6EB5FF",n:"Influence & defense."},
+{t:"Deep Work",a:"Cal Newport",th:"Focused work",m:"DISCIPLINE",c:"#111",n:"Depth as advantage."},
+{t:"Thinking, Fast and Slow",a:"Daniel Kahneman",th:"Biases",m:"PSYCHOLOGY",c:"#FF7A45",n:"Fast vs slow."},
+{t:"Almanack of Naval",a:"Eric Jorgenson",th:"Wealth happiness",m:"MONEY",c:"#FFD400",n:"Long-term games."},
+{t:"Zero to One",a:"Peter Thiel",th:"Building future",m:"MONEY",c:"#FFD400",n:"0 to 1, not 1 to n."},
+];
+let books=[...booksData];let bActive="ALL";let bOpen=null;
+function renderBooks(){
+const f=document.getElementById('bookFilters');f.innerHTML='';
+["ALL","PSYCHOLOGY","MONEY","PHILOSOPHY","DISCIPLINE","POWER","HABITS"].forEach(m=>{
+const s=document.createElement('span');s.className='pill'+(m===bActive?' active':'');s.textContent=m;s.onclick=()=>{bActive=m;bOpen=null;renderBooks();};f.appendChild(s);
+});
+const g=document.getElementById('bookGrid');g.innerHTML='';
+books.filter(b=>bActive==="ALL"||b.m===bActive).forEach((b,i)=>{
+const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=bOpen===i;
+const d=document.createElement('div');d.className='card'+(open?' open':'');d.style.transform=`rotate(${open?0:rot}deg) scale(${open?1.08:sc})`;
+d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')} ${b.fav?'⭐':''}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a} • ${b.th}</div></div><div class="mood" style="background:${b.c};color:${b.m==='MONEY'?'#111':'#fff'}">${b.m}</div></div><div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">KEEPER NOTE</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.n}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>● ● —</span><span>${open?'close':'unbox'}</span></div></div>`;
+d.onclick=()=>{bOpen=open?null:i;renderBooks();};
+g.appendChild(d);
+});
+}
+renderBooks();
+
+// MUSIC LOGIC
+const musicData=[
+{t:"Mila",a:"Cerna",m:"CANDY",c:"#FF7A45",f:"warm + loopable"},
+{t:"Safar",a:"Mitraz",m:"LATE NIGHT",c:"#111",f:"2am window seat"},
+{t:"Oczarowani",a:"Bunwood Remix",m:"HYPNOTIC",c:"#1A8B4C",f:"beautiful disorientation"},
+{t:"Not Guilty",a:"Tention",m:"ENERGY",c:"#FFD400",f:"push through"},
+{t:"Yaad Piya Ki Aane",a:"Old Soul",m:"SLOWED",c:"#111",f:"lights off, slowed + reverb"},
+{t:"Chamer",a:"Diljeet",m:"PUNJABI",c:"#FF7A45",f:"punjabi energy full vol"},
+{t:"Fall for You",a:"Subh",m:"PUNJABI",c:"#FF7A45",f:"candy + bounce"},
+{t:"9:45",a:"Anthem",m:"LATE NIGHT",c:"#111",f:"night drive"},
+{t:"Anthem of Nobody",a:"—",m:"ENERGY",c:"#FFD400",f:"anthem"},
+{t:"Naani",a:"Slowed+Reverb",m:"SLOWED",c:"#111",f:"stretched time"},
+{t:"Suleyman",a:"—",m:"HYPNOTIC",c:"#1A8B4C",f:"ritual loop"},
+{t:"Hipnotique",a:"—",m:"HYPNOTIC",c:"#1A8B4C",f:"eyes closed"},
+{t:"Kabze",a:"—",m:"PUNJABI",c:"#FF7A45",f:"hard punjabi"},
+{t:"Baila Lento",a:"—",m:"CANDY",c:"#FF7A45",f:"slow dance"},
+{t:"Dusty",a:"Sajin",m:"SLOWED",c:"#111",f:"dusty tape"},
+{t:"Life",a:"Akhil",m:"PUNJABI",c:"#FF7A45",f:"anthem"},
+{t:"Someone New",a:"Slowed",m:"SLOWED",c:"#111",f:"melancholy + reverb"},
+{t:"Archangel",a:"Slowed",m:"SLOWED",c:"#111",f:"heavenly drag"},
+];
+let music=[...musicData];let mActive="ALL";let mOpen=null;
+function renderMusic(){
+const f=document.getElementById('musicFilters');f.innerHTML='';
+["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY"].forEach(m=>{
+const s=document.createElement('span');s.className='pill'+(m===mActive?' active':'');s.textContent=m;s.onclick=()=>{mActive=m;mOpen=null;renderMusic();};f.appendChild(s);
+});
+const g=document.getElementById('musicGrid');g.innerHTML='';
+music.filter(b=>mActive==="ALL"||b.m===mActive).forEach((b,i)=>{
+const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=mOpen===i;
+const d=document.createElement('div');d.className='card'+(open?' open':'');d.style.transform=`rotate(${open?0:rot}deg) scale(${open?1.08:sc})`;
+d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a}</div></div><div class="mood" style="background:${b.c};color:${b.m==='ENERGY'||b.m==='CANDY'?'#111':'#fff'}">${b.m}</div></div><div class="bars">${Array.from({length:open?22:14}).map((_,k)=>`<div class="bar" style="height:${4+(k*7+i*11)%16}px;background:${b.c};opacity:${open?0.9-k*0.02:.7}"></div>`).join('')}</div><div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">FEEL</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.f}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>♪ —</span><span>${open?'close':'unbox'}</span></div></div>`;
+d.onclick=()=>{mOpen=open?null:i;renderMusic();};
+g.appendChild(d);
+});
+}
+renderMusic();
+
+// forms
+let bfOpen=false,mfOpen=false;
+document.getElementById('toggleBookForm').onclick=function(){
+bfOpen=!bfOpen;document.getElementById('bookFormWrap').classList.toggle('open',bfOpen);this.textContent=bfOpen?'× CLOSE':'+ ADD A KEEPER';
+};
+document.getElementById('bSubmit').onclick=function(){
+const t=document.getElementById('bTitle').value.trim();if(!t)return alert('title');
+const a=document.getElementById('bAuthor').value.trim()||'—';const th='New keeper';const m=document.getElementById('bMood').value;const n=document.getElementById('bNote').value.trim()||'A useful book should change what you notice.';
+const colors={PSYCHOLOGY:'#FF7A45',MONEY:'#FFD400',PHILOSOPHY:'#1A8B4C',DISCIPLINE:'#111',POWER:'#6EB5FF',HABITS:'#E882B4'};
+books.unshift({t,a,th,m,c:colors[m],n});bActive='ALL';bOpen=0;bfOpen=false;document.getElementById('bookFormWrap').classList.remove('open');document.getElementById('toggleBookForm').textContent='+ ADD A KEEPER';
+document.getElementById('bTitle').value='';document.getElementById('bAuthor').value='';document.getElementById('bNote').value='';
+renderBooks();
+};
+document.getElementById('toggleMusicForm').onclick=function(){
+mfOpen=!mfOpen;document.getElementById('musicFormWrap').classList.toggle('open',mfOpen);this.textContent=mfOpen?'× CLOSE':'+ ADD A TAPE';
+};
+document.getElementById('mSubmit').onclick=function(){
+const t=document.getElementById('mTitle').value.trim();if(!t)return alert('title');
+const a=document.getElementById('mArtist').value.trim()||'—';const m=document.getElementById('mMood').value;const f=document.getElementById('mFeel').value.trim()||'late night';
+const colors={PUNJABI:'#FF7A45',SLOWED:'#111',HYPNOTIC:'#1A8B4C','LATE NIGHT':'#111',ENERGY:'#FFD400',CANDY:'#FF7A45'};
+music.unshift({t,a,m,c:colors[m],f});mActive='ALL';mOpen=0;mfOpen=false;document.getElementById('musicFormWrap').classList.remove('open');document.getElementById('toggleMusicForm').textContent='+ ADD A TAPE';
+document.getElementById('mTitle').value='';document.getElementById('mArtist').value='';document.getElementById('mFeel').value='';
+renderMusic();
+};
+</script>
+</body></html>
