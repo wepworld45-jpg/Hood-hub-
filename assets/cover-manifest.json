@@ -107,6 +107,7 @@
     "thinking, fast and slow::daniel kahneman": {
       "small": "https://covers.openlibrary.org/b/id/13290711-S.jpg",
       "medium": "https://covers.openlibrary.org/b/id/13290711-M.jpg",
+      "large": "assets/book-covers/thinking-fast-and-slow.webp",
       "provider": "Open Library",
       "providerUrl": "https://openlibrary.org/"
     },
