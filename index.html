@@ -74,7 +74,7 @@ html{scroll-behavior:smooth}
 .apiCard{background:#fff;color:#111;border:1.5px solid #fff;border-radius:10px;padding:12px;min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
 .apiCardTop{display:flex;gap:10px;align-items:flex-start}
 .apiCover{width:54px;height:72px;object-fit:cover;border-radius:5px;background:#eee;flex:0 0 auto}
-.bookVisual{display:flex;align-items:center;justify-content:center;width:100%;height:92px;margin-bottom:9px;border-radius:7px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(0,0,0,.08));border:1px solid rgba(0,0,0,.1);font:8px 'Space Mono';letter-spacing:.12em;text-align:center;opacity:.6}.bookVisual img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s ease}.bookVisual.hasCover{opacity:1}.bookVisual.hasCover img{opacity:1}
+.bookVisual{display:flex;align-items:center;justify-content:center;width:100%;height:92px;margin-bottom:9px;border-radius:7px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(0,0,0,.08));border:1px solid rgba(0,0,0,.1);font:8px 'Space Mono';letter-spacing:.12em;text-align:center;opacity:.6}.bookVisual img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .2s ease}.bookVisual.hasCover{opacity:1}.bookVisual.hasCover img{opacity:1}.musicVisual{display:flex;align-items:center;justify-content:center;width:100%;height:82px;margin-bottom:10px;border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(0,0,0,.08));border:1px solid rgba(0,0,0,.1);font:8px 'Space Mono';letter-spacing:.1em;text-align:center;opacity:.62}.musicVisual img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .2s ease}.musicVisual.hasCover{opacity:1}.musicVisual.hasCover img{opacity:1}.musicApiCover{width:72px;height:72px;object-fit:cover;border-radius:7px;flex:0 0 auto}
 .apiMeta{min-width:0}
 .apiCardTitle{font-family:'Anton';font-size:17px;line-height:1;text-transform:uppercase;overflow-wrap:anywhere}
 .apiCardSub{font:10px 'Space Mono';opacity:.65;margin-top:5px;line-height:1.4}
@@ -252,12 +252,15 @@ const booksData=[
 ];
 let books=[...booksData];let bActive="ALL";let bOpen=null;
 const bookCoverCache={};
+function setBookCover(slot,url,label){if(!slot||!url)return;const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.fetchPriority='low';img.alt=`${label||'Book'} cover`;img.onerror=()=>{slot.classList.remove('hasCover');slot.dataset.failed='1';};img.src=url;slot.replaceChildren(img);slot.classList.add('hasCover');}
 async function loadBookCover(book,slot){
-  if(!slot)return;
-  if(book.coverUrl){const img=document.createElement('img');img.loading='lazy';img.alt=`${book.t||'Book'} cover`;img.src=book.coverUrl;slot.replaceChildren(img);slot.classList.add('hasCover');return;}
+  if(!slot||slot.dataset.loading==='1'||slot.dataset.failed==='1')return;
+  if(book.coverUrl){setBookCover(slot,book.coverUrl,book.t);return;}
   const key=`${book.t||''}::${book.a||''}`.toLowerCase();
-  if(bookCoverCache[key]){const img=document.createElement('img');img.loading='lazy';img.alt=`${book.t||'Book'} cover`;img.src=bookCoverCache[key];slot.replaceChildren(img);slot.classList.add('hasCover');return;}
-  try{const query=encodeURIComponent(`${book.t||''} ${book.a||''}`);const response=await fetch(`https://openlibrary.org/search.json?q=${query}&limit=1&fields=cover_i`);if(!response.ok)return;const data=await response.json();const coverId=data.docs?.[0]?.cover_i;if(!coverId)return;const url=`https://covers.openlibrary.org/b/id/${coverId}-L.jpg`;bookCoverCache[key]=url;book.coverUrl=url;if(!slot.isConnected)return;const img=document.createElement('img');img.loading='lazy';img.alt=`${book.t||'Book'} cover`;img.src=url;slot.replaceChildren(img);slot.classList.add('hasCover');}catch(error){}
+  if(bookCoverCache[key]){book.coverUrl=bookCoverCache[key];setBookCover(slot,book.coverUrl,book.t);return;}
+  try{const stored=sessionStorage.getItem(`vivuhub-cover:${key}`);if(stored){bookCoverCache[key]=stored;book.coverUrl=stored;setBookCover(slot,stored,book.t);return;}}catch(error){}
+  slot.dataset.loading='1';
+  try{const query=encodeURIComponent(`${book.t||''} ${book.a||''}`);const response=await fetch(`https://openlibrary.org/search.json?q=${query}&limit=1&fields=cover_i`);if(!response.ok)return;const data=await response.json();const coverId=data.docs?.[0]?.cover_i;if(!coverId)return;const url=`https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;bookCoverCache[key]=url;book.coverUrl=url;try{sessionStorage.setItem(`vivuhub-cover:${key}`,url);}catch(error){}if(slot.isConnected)setBookCover(slot,url,book.t);}catch(error){}finally{delete slot.dataset.loading;}
 }
 function renderBooks(loadCovers=true){
 const f=document.getElementById('bookFilters');f.innerHTML='';
@@ -276,7 +279,7 @@ g.appendChild(d);
 }
 function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;let started=false;const run=()=>{if(started)return;const top=section.getBoundingClientRect().top;if(top>=window.innerHeight)return;started=true;window.removeEventListener('scroll',run);render();};run();window.addEventListener('scroll',run,{passive:true});}
 let bookCoversStarted=false;
-function hydrateBookCovers(){if(bookCoversStarted)return;bookCoversStarted=true;document.querySelectorAll('#bookGrid .card').forEach((card,index)=>loadBookCover(books[index],card.querySelector('[data-book-cover]')));}
+function hydrateBookCovers(){if(bookCoversStarted)return;bookCoversStarted=true;const slots=[...document.querySelectorAll('#bookGrid .card')].map((card,index)=>({book:books[index],slot:card.querySelector('[data-book-cover]')})).filter(item=>item.slot);if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;const item=slots.find(candidate=>candidate.slot===entry.target);if(item){loadBookCover(item.book,item.slot);observer.unobserve(entry.target);}}),{rootMargin:'420px 0px',threshold:.01});slots.forEach(item=>observer.observe(item.slot));}else slots.slice(0,6).forEach(item=>loadBookCover(item.book,item.slot));}
 function scheduleBookCovers(){const section=document.getElementById('books');if(!section)return;const run=()=>{if(section.getBoundingClientRect().top>=window.innerHeight)return;hydrateBookCovers();window.removeEventListener('scroll',run);};run();window.addEventListener('scroll',run,{passive:true});}
 scheduleShelfWhenVisible(()=>{renderBooks(false);scheduleBookCovers();},'books');
 
@@ -296,7 +299,10 @@ const nowPlaying=document.getElementById('nowPlaying');
 const nowPlayingTitle=document.getElementById('nowPlayingTitle');
 let activeAudioMode='full';let activeAudioLabel='VIVUHUB track';
 function playBuiltInSong(label='VIVUHUB track'){songPlayer.pause();if(activeMusicCard)activeMusicCard.classList.remove('is-playing');activeMusicCard=null;songPlayer.src='assets/beat-electronic.ogg';songPlayer.currentTime=0;songPlayer.load();activeAudioMode='full';activeAudioLabel=label;songPlayer.play().then(()=>{playSongBtn.textContent='❚❚ PAUSE SONG';apiStatus(musicApiStatus,`Playing the full VIVUHUB song from “${label}”.`);}).catch(()=>{playSongBtn.textContent='▶ PLAY SONG';apiStatus(musicApiStatus,'Press PLAY SONG to start the track.');});}
-const itunesCache=new Map();
+const itunesCache=new Map();const musicArtworkCache={};let musicArtworkObserver=null;
+function largerItunesArtwork(url){return String(url||'').replaceAll('/100x100bb','/600x600bb').replaceAll('/60x60bb','/600x600bb').replaceAll('/30x30bb','/600x600bb');}
+function setMusicArtwork(slot,url,label){if(!slot||!url)return;const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.fetchPriority='low';img.alt=`${label||'Song'} artwork`;img.onerror=()=>{slot.classList.remove('hasCover');slot.dataset.failed='1';};img.src=largerItunesArtwork(url);slot.replaceChildren(img);slot.classList.add('hasCover');}
+async function loadMusicArtwork(track,slot){if(!slot||slot.dataset.loading==='1'||slot.dataset.failed==='1')return;const direct=track.artworkUrl||track.artworkUrl100||'';if(direct){setMusicArtwork(slot,direct,track.t);return;}const key=`${track.t||''}::${track.a||''}`.toLowerCase();if(musicArtworkCache[key]){track.artworkUrl=musicArtworkCache[key];setMusicArtwork(slot,track.artworkUrl,track.t);return;}slot.dataset.loading='1';try{const term=encodeURIComponent(`${track.t||''} ${track.a==='—'?'':track.a||''}`.trim());const response=await fetch(`https://itunes.apple.com/search?term=${term}&media=music&entity=song&limit=5&country=US`);if(!response.ok)return;const data=await response.json();const match=(data.results||[]).find(item=>item.artworkUrl100);if(!match)return;const url=match.artworkUrl100;musicArtworkCache[key]=url;track.artworkUrl=url;if(slot.isConnected)setMusicArtwork(slot,url,track.t);}catch(error){}finally{delete slot.dataset.loading;}}
 async function playItunesPreview(card,cardElement){
   const key=`${card.t}|${card.a}`;let track=itunesCache.get(key);
   if(!track){apiStatus(musicApiStatus,`Finding the iTunes preview for “${card.t}”…`);try{
@@ -322,7 +328,7 @@ function addBookFromApi(book){
   const title=book.title||'Untitled keeper';
   const author=(book.author_name||[])[0]||'Unknown author';
   const note=(book.subject||[]).slice(0,3).join(' • ')||'A new idea for the index.';
-  const coverUrl=book.cover_i?`https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`:'';
+  const coverUrl=book.cover_i?`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`:'';
   books.unshift({t:title,a:author,th:note,m:'PHILOSOPHY',c:'#1A8B4C',n:`Found through Open Library${book.first_publish_year?' · '+book.first_publish_year:''}`,coverUrl});
   bActive='ALL';bOpen=0;renderBooks();
   apiStatus(bookApiStatus,`Saved “${title}” to your keepers.`);
@@ -333,7 +339,7 @@ function renderBookApi(){
     const author=(book.author_name||[]).slice(0,2).join(', ')||'Unknown author';
     const year=book.first_publish_year?` · ${book.first_publish_year}`:'';
     const subjects=(book.subject||[]).slice(0,2).join(' · ')||'Open Library record';
-    return `<article class="apiCard"><div><div class="apiCardTop">${cover?`<img class="apiCover" loading="lazy" src="${escapeHtml(cover)}" alt="">`:''}<div class="apiMeta"><div class="apiCardTitle">${escapeHtml(book.title||'Untitled')}</div><div class="apiCardSub">${escapeHtml(author+year)}</div></div></div><div class="apiCardNote">${escapeHtml(subjects)}</div></div><div class="apiActions"><span class="apiSource">Open Library</span><button class="apiAction primary" data-book-index="${index}">SAVE KEEPER</button></div></article>`;
+    return `<article class="apiCard"><div><div class="apiCardTop">${cover?`<img class="apiCover" loading="lazy" decoding="async" src="${escapeHtml(cover)}" alt="">`:''}<div class="apiMeta"><div class="apiCardTitle">${escapeHtml(book.title||'Untitled')}</div><div class="apiCardSub">${escapeHtml(author+year)}</div></div></div><div class="apiCardNote">${escapeHtml(subjects)}</div></div><div class="apiActions"><span class="apiSource">Open Library</span><button class="apiAction primary" data-book-index="${index}">SAVE KEEPER</button></div></article>`;
   }).join('');
   bookApiGrid.querySelectorAll('[data-book-index]').forEach(button=>button.onclick=()=>addBookFromApi(bookApiResults[Number(button.dataset.bookIndex)]));
 }
@@ -358,11 +364,11 @@ function playItunesTrack(track,label,cardElement){
   songPlayer.play().then(()=>{playSongBtn.textContent='❚❚ PAUSE PREVIEW';apiStatus(musicApiStatus,`Playing the 30-second preview for “${activeAudioLabel}”.`);}).catch(()=>{playSongBtn.textContent='▶ PLAY PREVIEW';apiStatus(musicApiStatus,`Preview ready for “${activeAudioLabel}”. Press PLAY PREVIEW to start.`);});
 }
 function saveItunesTrack(track){
-  music.unshift({t:track.trackName||'iTunes song',a:track.artistName||'Unknown artist',m:'CANDY',c:'#FF7A45',f:'saved from the iTunes preview library',previewUrl:track.previewUrl,providerUrl:track.trackViewUrl});
+  music.unshift({t:track.trackName||'iTunes song',a:track.artistName||'Unknown artist',m:'CANDY',c:'#FF7A45',f:'saved from the iTunes preview library',previewUrl:track.previewUrl,providerUrl:track.trackViewUrl,artworkUrl:track.artworkUrl100||track.artworkUrl60||''});
   mActive='ALL';mOpen=0;renderMusic();apiStatus(musicApiStatus,`Saved “${track.trackName||'iTunes song'}” to your tapes.`);
 }
 function renderMusicApi(){
-  musicApiGrid.innerHTML=musicApiResults.map((track,index)=>`<article class="apiCard"><div><div class="apiCardTop"><div class="apiMeta"><div class="apiCardTitle">${escapeHtml(track.trackName||'Song preview')}</div><div class="apiCardSub">${escapeHtml([track.artistName,track.collectionName].filter(Boolean).join(' · ')||'iTunes')}</div></div></div><div class="apiCardNote">${escapeHtml(track.primaryGenreName||'Music')} · Official Apple 30-second preview.</div></div><div class="apiActions"><span class="apiSource">iTunes</span><span style="display:flex;gap:6px"><button class="apiAction primary" data-preview-index="${index}">PREVIEW</button><button class="apiAction" data-save-index="${index}">SAVE</button>${track.trackViewUrl?`<a class="apiAction" href="${escapeHtml(track.trackViewUrl)}" target="_blank" rel="noopener">FULL SONG</a>`:''}</span></div></article>`).join('');
+  musicApiGrid.innerHTML=musicApiResults.map((track,index)=>{const cover=track.artworkUrl100?largerItunesArtwork(track.artworkUrl100):'';return `<article class="apiCard"><div><div class="apiCardTop">${cover?`<img class="musicApiCover" loading="lazy" decoding="async" src="${escapeHtml(cover)}" alt="${escapeHtml(track.trackName||'Song')} artwork">`:''}<div class="apiMeta"><div class="apiCardTitle">${escapeHtml(track.trackName||'Song preview')}</div><div class="apiCardSub">${escapeHtml([track.artistName,track.collectionName].filter(Boolean).join(' · ')||'iTunes')}</div></div></div><div class="apiCardNote">${escapeHtml(track.primaryGenreName||'Music')} · Official Apple 30-second preview.</div></div><div class="apiActions"><span class="apiSource">iTunes</span><span style="display:flex;gap:6px"><button class="apiAction primary" data-preview-index="${index}">PREVIEW</button><button class="apiAction" data-save-index="${index}">SAVE</button>${track.trackViewUrl?`<a class="apiAction" href="${escapeHtml(track.trackViewUrl)}" target="_blank" rel="noopener">FULL SONG</a>`:''}</span></div></article>`;}).join('');
   musicApiGrid.querySelectorAll('[data-preview-index]').forEach(button=>button.onclick=()=>playItunesTrack(musicApiResults[Number(button.dataset.previewIndex)],musicApiResults[Number(button.dataset.previewIndex)].trackName,button.closest('.apiCard')));
   musicApiGrid.querySelectorAll('[data-save-index]').forEach(button=>button.onclick=()=>saveItunesTrack(musicApiResults[Number(button.dataset.saveIndex)]));
 }
@@ -432,6 +438,7 @@ const musicData=[
 let music=[...musicData];let mActive="ALL";let mOpen=null;let activeMusicCard=null;
 function syncMoodPlaylistButtons(){document.querySelectorAll('[data-playlist-mood]').forEach(button=>{const active=button.dataset.playlistMood===mActive;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});}
 function renderMusic(){
+if(musicArtworkObserver)musicArtworkObserver.disconnect();
 const f=document.getElementById('musicFilters');f.innerHTML='';
 ["ALL","PUNJABI","SLOWED","HYPNOTIC","LATE NIGHT","ENERGY","CANDY","12+","3AM","😂 INDIAN GOVERNMENT"].forEach(m=>{
 const s=document.createElement('span');s.className='pill'+(m===mActive?' active':'');s.textContent=m;s.onclick=()=>{mActive=m;mOpen=null;renderMusic();};f.appendChild(s);
@@ -439,14 +446,16 @@ const s=document.createElement('span');s.className='pill'+(m===mActive?' active'
 syncMoodPlaylistButtons();
 const g=document.getElementById('musicGrid');g.innerHTML='';const fragment=document.createDocumentFragment();
 music.filter(b=>mActive==="ALL"||b.m===mActive).forEach((b,i)=>{
-const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=mOpen===i;
+const rot=(Math.random()*6-3).toFixed(2);const sc=(0.96+Math.random()*0.07).toFixed(2);const open=mOpen===i;const musicIndex=music.indexOf(b);
 const d=document.createElement('div');d.className='card'+(open?' open':'');d.style.transform=`rotate(${open?0:rot}deg) scale(${open?1.08:sc})`;
-d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a}</div></div><div class="mood" style="background:${b.c};color:${b.m==='ENERGY'||b.m==='CANDY'?'#111':'#fff'}">${b.m}</div></div><div class="bars">${Array.from({length:open?22:14}).map((_,k)=>`<div class="bar" style="height:${4+(k*7+i*11)%16}px;background:${b.c};opacity:${open?0.9-k*0.02:.7}"></div>`).join('')}</div><button class="apiAction primary songSaved" style="margin-top:10px" type="button">PREVIEW 30S</button>${b.providerUrl?`<a class="apiAction officialSong" style="margin-top:10px" href="${b.providerUrl}" target="_blank" rel="noopener">FULL SONG</a>`:''}<div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">FEEL</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.f}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>♪ —</span><span>${open?'close':'unbox'}</span></div></div>`;
+d.innerHTML=`<div class="inner"><div style="display:flex;justify-content:space-between"><span class="dot" style="background:${b.c}"></span><span style="font-size:8px;opacity:.4">${String(i+1).padStart(2,'0')}</span></div><div style="margin-top:8px;background:${b.c}1A;border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px 10px"><div class="musicVisual" data-music-artwork data-track-index="${musicIndex}"><span>ITUNES<br>ARTWORK</span></div><div style="display:flex;justify-content:space-between;gap:6px"><div style="min-width:0"><div class="title">${b.t}</div><div class="sub">${b.a}</div></div><div class="mood" style="background:${b.c};color:${b.m==='ENERGY'||b.m==='CANDY'?'#111':'#fff'}">${b.m}</div></div><div class="bars">${Array.from({length:open?22:14}).map((_,k)=>`<div class="bar" style="height:${4+(k*7+i*11)%16}px;background:${b.c};opacity:${open?0.9-k*0.02:.7}"></div>`).join('')}</div><button class="apiAction primary songSaved" style="margin-top:10px" type="button">PREVIEW 30S</button>${b.providerUrl?`<a class="apiAction officialSong" style="margin-top:10px" href="${b.providerUrl}" target="_blank" rel="noopener">FULL SONG</a>`:''}<div class="feel ${open?'open':''}"><div style="overflow:hidden"><div style="background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;margin-top:8px"><div style="font-size:9px;letter-spacing:.14em;opacity:.5">FEEL</div><div style="font-size:11.5px;margin-top:4px;font-family:serif;font-style:italic">“${b.f}”</div></div></div></div></div><div style="display:flex;justify-content:space-between;font-size:8px;opacity:.35;margin-top:8px"><span>♪ —</span><span>${open?'close':'unbox'}</span></div></div>`;
 d.classList.add('musicCard');
 d.onclick=event=>{if(event.target.classList.contains('songSaved')){event.stopPropagation();playItunesPreview(b,d);return;}mOpen=open?null:i;renderMusic();};
 fragment.appendChild(d);
 });
 g.appendChild(fragment);
+const artworkSlots=[...g.querySelectorAll('[data-music-artwork]')];
+if('IntersectionObserver' in window){musicArtworkObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;const slot=entry.target;const track=music[Number(slot.dataset.trackIndex)];if(track)loadMusicArtwork(track,slot);musicArtworkObserver.unobserve(slot);}),{rootMargin:'520px 0px',threshold:.01});artworkSlots.forEach(slot=>musicArtworkObserver.observe(slot));}else artworkSlots.slice(0,6).forEach(slot=>{const track=music[Number(slot.dataset.trackIndex)];if(track)loadMusicArtwork(track,slot);});
 }
 scheduleShelfWhenVisible(renderMusic,'music');
 document.querySelectorAll('[data-playlist-mood]').forEach(button=>button.onclick=()=>{mActive=button.dataset.playlistMood;mOpen=null;renderMusic();document.getElementById('musicGrid').scrollIntoView({behavior:'smooth',block:'start'});});
