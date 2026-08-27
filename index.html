@@ -1,7 +1,9 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VIVUHUB — Complete</title>
-<link rel="preconnect" href="https://fifth-gentle-45902158.figma.site">
-<link rel="preload" as="image" href="https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/1.02464a56.png" fetchpriority="high">
+<link rel="preload" as="image" href="assets/hero-primary.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/hero-02.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/hero-03.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/hero-04.webp" fetchpriority="high">
 <style>
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -180,10 +182,10 @@ html{scroll-behavior:smooth}
 
 <script>
 const IMAGES=[
-{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/1.02464a56.png',bg:'#F4845F'},
-{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/2.b977faab.png',bg:'#6BBF7A'},
-{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/3.4df853b4.png',bg:'#E882B4'},
-{src:'https://fifth-gentle-45902158.figma.site/_components/v2/4de492f6d9cf8244ad5293233e5c6f52407d42fc/4.4457fbce.png',bg:'#6EB5FF'},
+{src:'assets/hero-primary.webp',bg:'#F4845F'},
+{src:'assets/hero-02.webp',bg:'#6BBF7A'},
+{src:'assets/hero-03.webp',bg:'#E882B4'},
+{src:'assets/hero-04.webp',bg:'#6EB5FF'},
 ];
 let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640,heroStarted=false;
 window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;if(heroStarted)renderHero();});
@@ -207,16 +209,13 @@ else if(role==='left'){style=`left:${isMobile?'20%':'30%'};height:${isMobile?'16
 else if(role==='right'){style=`left:${isMobile?'80%':'70%'};height:${isMobile?'16%':'28%'};bottom:${isMobile?'32%':'12%'};transform:translateX(-50%) scale(1);filter:none;opacity:.85;z-index:10`;}
 else{style=`left:50%;height:${isMobile?'13%':'22%'};bottom:${isMobile?'32%':'12%'};transform:translateX(-50%) scale(1);filter:none;opacity:1;z-index:5`;}
 d.style.cssText=style;
-d.classList.add('loading');const skeleton=document.createElement('span');skeleton.className='figSkeleton';skeleton.setAttribute('aria-hidden','true');d.appendChild(skeleton);const img=document.createElement('img');img.draggable=false;img.decoding='async';img.loading=role==='center'?'eager':'lazy';img.fetchPriority=role==='center'?'high':'low';img.alt='';img.onload=()=>{d.classList.add('loaded');d.classList.remove('loading');skeleton.classList.add('is-hidden');};img.onerror=()=>{d.classList.add('failed');d.classList.remove('loading');skeleton.classList.add('is-error');};if(role==='center')img.src=IMAGES[idx].src;else img.dataset.src=IMAGES[idx].src;d.appendChild(img);
+d.classList.add('loading');const skeleton=document.createElement('span');skeleton.className='figSkeleton';skeleton.setAttribute('aria-hidden','true');d.appendChild(skeleton);const img=document.createElement('img');img.draggable=false;img.decoding='async';img.loading='eager';img.fetchPriority='high';img.alt='';img.onload=()=>{d.classList.add('loaded');d.classList.remove('loading');skeleton.classList.add('is-hidden');};img.onerror=()=>{d.classList.add('failed');d.classList.remove('loading');skeleton.classList.add('is-error');};img.src=IMAGES[idx].src;d.appendChild(img);
 carousel.appendChild(d);
 });
 }
-let heroSecondaryStarted=false;
-function wakeHeroImages(){if(heroSecondaryStarted)return;heroSecondaryStarted=true;document.querySelectorAll('.fig img[data-src]').forEach(img=>{img.src=img.dataset.src;img.removeAttribute('data-src');});}
-function scheduleHeroImages(){window.addEventListener('pointerdown',wakeHeroImages,{once:true,passive:true});window.addEventListener('keydown',wakeHeroImages,{once:true});}
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
-function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});scheduleHeroImages();}
+function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHero,{once:true});else requestAnimationFrame(startHero);
 
 // BOOKS LOGIC
