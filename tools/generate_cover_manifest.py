@@ -159,7 +159,7 @@ def main() -> int:
     )
     preload_urls = []
     for item in list(critical["books"].values())[:2]:
-        preload_urls.append((item.get("small", ""), "92px"))
+        preload_urls.append((item.get("medium") or item.get("small", ""), "92px"))
     for item in list(critical["music"].values())[:2]:
         preload_urls.append((item.get("small", ""), "82px"))
     preload_tags = []
