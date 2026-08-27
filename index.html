@@ -115,7 +115,6 @@ html{scroll-behavior:smooth}
 <div class="navBtns">
 <button class="circle" id="prevBtn" aria-label="prev"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
 <button class="circle" id="nextBtn" aria-label="next"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><svg width="26" height="26" style="position:absolute;transform:rotate(90deg)" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
-<button class="autoToggle" id="autoToggle" type="button" aria-label="Pause automatic slideshow" aria-pressed="false">Ⅱ AUTO</button>
 </div>
 </div>
 <a class="bottomRight discover" href="#books">DISCOVER IT <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" class="sm:w-8 sm:h-8"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
@@ -186,15 +185,14 @@ const IMAGES=[
 {src:'assets/hero-03.webp',bg:'#E882B4'},
 {src:'assets/hero-04.webp',bg:'#6EB5FF'},
 ];
-let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640,heroStarted=false,autoAdvanceTimer=0,autoAdvanceUserPaused=false,heroPointerInside=false;
-const AUTO_ADVANCE_MS=5200;
+let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640,heroStarted=false,autoAdvanceTimer=0,heroPointerInside=false;
+const AUTO_ADVANCE_MS=3000;
 window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;if(heroStarted){renderHero();scheduleHeroAutoplay();}});
-const hero=document.getElementById('hero');const heroBackdrop=document.getElementById('heroBackdrop');const carousel=document.getElementById('carousel');const autoToggle=document.getElementById('autoToggle');let spectrumReady=false,backdropTimer=0;
+const hero=document.getElementById('hero');const heroBackdrop=document.getElementById('heroBackdrop');const carousel=document.getElementById('carousel');let spectrumReady=false,backdropTimer=0;
 function motionReduced(){return !!window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 function clearHeroAutoplay(){if(autoAdvanceTimer){clearTimeout(autoAdvanceTimer);autoAdvanceTimer=0;}}
-function updateAutoToggle(){if(!autoToggle)return;const blocked=autoAdvanceUserPaused||document.hidden||heroPointerInside||motionReduced();autoToggle.textContent=autoAdvanceUserPaused?'▶ AUTO':'Ⅱ AUTO';autoToggle.setAttribute('aria-pressed',String(autoAdvanceUserPaused));autoToggle.setAttribute('aria-label',autoAdvanceUserPaused?'Resume automatic slideshow':'Pause automatic slideshow');autoToggle.style.opacity=blocked&& !autoAdvanceUserPaused?'.55':'1';}
-function scheduleHeroAutoplay(){clearHeroAutoplay();updateAutoToggle();if(!heroStarted||autoAdvanceUserPaused||document.hidden||heroPointerInside||motionReduced())return;autoAdvanceTimer=setTimeout(()=>{autoAdvanceTimer=0;if(!isAnimating)navigate('next');else scheduleHeroAutoplay();},AUTO_ADVANCE_MS);}
-function pauseHeroForPointer(){if(!isMobile){heroPointerInside=true;clearHeroAutoplay();updateAutoToggle();}}
+function scheduleHeroAutoplay(){clearHeroAutoplay();if(!heroStarted||document.hidden||heroPointerInside||motionReduced())return;autoAdvanceTimer=setTimeout(()=>{autoAdvanceTimer=0;if(!isAnimating)navigate('next');else scheduleHeroAutoplay();},AUTO_ADVANCE_MS);}
+function pauseHeroForPointer(){if(!isMobile){heroPointerInside=true;clearHeroAutoplay();}}
 function resumeHeroForPointer(){if(!isMobile){heroPointerInside=false;scheduleHeroAutoplay();}}
 
 function applyHeroBackdrop(index){
@@ -228,8 +226,7 @@ d.classList.add('loading');const skeleton=document.createElement('span');skeleto
 }
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
-autoToggle.onclick=()=>{autoAdvanceUserPaused=!autoAdvanceUserPaused;if(autoAdvanceUserPaused)clearHeroAutoplay();scheduleHeroAutoplay();};
-hero.addEventListener('pointerenter',pauseHeroForPointer);hero.addEventListener('pointerleave',resumeHeroForPointer);hero.addEventListener('focusin',()=>{clearHeroAutoplay();updateAutoToggle();});hero.addEventListener('focusout',event=>{if(!hero.contains(event.relatedTarget))scheduleHeroAutoplay();});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearHeroAutoplay();else scheduleHeroAutoplay();});window.addEventListener('blur',clearHeroAutoplay);window.addEventListener('focus',scheduleHeroAutoplay);
+hero.addEventListener('pointerenter',pauseHeroForPointer);hero.addEventListener('pointerleave',resumeHeroForPointer);hero.addEventListener('focusin',clearHeroAutoplay);hero.addEventListener('focusout',event=>{if(!hero.contains(event.relatedTarget))scheduleHeroAutoplay();});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearHeroAutoplay();else scheduleHeroAutoplay();});window.addEventListener('blur',clearHeroAutoplay);window.addEventListener('focus',scheduleHeroAutoplay);
 let swipePointerId=null,swipeStartX=0,swipeStartY=0;
 function resetSwipe(){swipePointerId=null;swipeStartX=0;swipeStartY=0;}
 carousel.addEventListener('pointerdown',event=>{if(!isMobile||event.pointerType==='mouse'||event.target.closest('button,a'))return;clearHeroAutoplay();swipePointerId=event.pointerId;swipeStartX=event.clientX;swipeStartY=event.clientY;carousel.setPointerCapture?.(event.pointerId);});
