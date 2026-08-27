@@ -21,7 +21,7 @@ html{scroll-behavior:smooth}
 .navBtns{display:flex;gap:16px}
 .circle{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:9999px;background:transparent;border:2px solid #fff;color:#fff;display:grid;place-items:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform 150ms ease,background-color 150ms ease,opacity 150ms ease}
 @media(min-width:640px){.circle{width:64px;height:64px}}
-@media(hover:hover) and (pointer:fine){.circle:hover{transform:translateY(-2px) scale(1.06);background:rgba(255,255,255,.12)}}.circle:active{transform:scale(.94);background:rgba(255,255,255,.2)}.circle:disabled{opacity:.55;cursor:wait}
+@media(hover:hover) and (pointer:fine){.circle:hover{transform:translateY(-2px) scale(1.06);background:rgba(255,255,255,.12)}}.circle:active{transform:scale(.94);background:rgba(255,255,255,.2)}.circle:disabled{opacity:.55;cursor:wait}.autoToggle{min-width:48px;min-height:48px;padding:0 10px;border:1.5px solid #fff;border-radius:999px;background:rgba(0,0,0,.14);color:#fff;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;font:700 9px 'Space Mono';letter-spacing:.06em;transition:transform 150ms ease,background-color 150ms ease,opacity 150ms ease}.autoToggle:hover{transform:translateY(-2px);background:rgba(255,255,255,.14)}.autoToggle:active{transform:scale(.94)}.autoToggle[aria-pressed="true"]{background:#fff;color:#111}
 .bottomRight{position:absolute;bottom:24px;right:16px;z-index:60}
 @media(min-width:640px){.bottomRight{bottom:80px;right:40px}}
 .discover{display:flex;align-items:center;gap:8px;font-family:'Anton',sans-serif;font-size:clamp(20px,4vw,56px);font-weight:400;color:#fff;opacity:.95;letter-spacing:-.02em;line-height:1;text-transform:uppercase;text-decoration:none;transition:opacity 200ms}
@@ -115,6 +115,7 @@ html{scroll-behavior:smooth}
 <div class="navBtns">
 <button class="circle" id="prevBtn" aria-label="prev"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
 <button class="circle" id="nextBtn" aria-label="next"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg><svg width="26" height="26" style="position:absolute;transform:rotate(90deg)" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></button>
+<button class="autoToggle" id="autoToggle" type="button" aria-label="Pause automatic slideshow" aria-pressed="false">Ⅱ AUTO</button>
 </div>
 </div>
 <a class="bottomRight discover" href="#books">DISCOVER IT <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.25" class="sm:w-8 sm:h-8"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
@@ -185,9 +186,17 @@ const IMAGES=[
 {src:'assets/hero-03.webp',bg:'#E882B4'},
 {src:'assets/hero-04.webp',bg:'#6EB5FF'},
 ];
-let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640,heroStarted=false;
-window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;if(heroStarted)renderHero();});
-const hero=document.getElementById('hero');const heroBackdrop=document.getElementById('heroBackdrop');const carousel=document.getElementById('carousel');let spectrumReady=false,backdropTimer=0;
+let activeIndex=0,isAnimating=false,isMobile=window.innerWidth<640,heroStarted=false,autoAdvanceTimer=0,autoAdvanceUserPaused=false,heroPointerInside=false;
+const AUTO_ADVANCE_MS=5200;
+window.addEventListener('resize',()=>{isMobile=window.innerWidth<640;if(heroStarted){renderHero();scheduleHeroAutoplay();}});
+const hero=document.getElementById('hero');const heroBackdrop=document.getElementById('heroBackdrop');const carousel=document.getElementById('carousel');const autoToggle=document.getElementById('autoToggle');let spectrumReady=false,backdropTimer=0;
+function motionReduced(){return !!window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
+function clearHeroAutoplay(){if(autoAdvanceTimer){clearTimeout(autoAdvanceTimer);autoAdvanceTimer=0;}}
+function updateAutoToggle(){if(!autoToggle)return;const blocked=autoAdvanceUserPaused||document.hidden||heroPointerInside||motionReduced();autoToggle.textContent=autoAdvanceUserPaused?'▶ AUTO':'Ⅱ AUTO';autoToggle.setAttribute('aria-pressed',String(autoAdvanceUserPaused));autoToggle.setAttribute('aria-label',autoAdvanceUserPaused?'Resume automatic slideshow':'Pause automatic slideshow');autoToggle.style.opacity=blocked&& !autoAdvanceUserPaused?'.55':'1';}
+function scheduleHeroAutoplay(){clearHeroAutoplay();updateAutoToggle();if(!heroStarted||autoAdvanceUserPaused||document.hidden||heroPointerInside||motionReduced())return;autoAdvanceTimer=setTimeout(()=>{autoAdvanceTimer=0;if(!isAnimating)navigate('next');else scheduleHeroAutoplay();},AUTO_ADVANCE_MS);}
+function pauseHeroForPointer(){if(!isMobile){heroPointerInside=true;clearHeroAutoplay();updateAutoToggle();}}
+function resumeHeroForPointer(){if(!isMobile){heroPointerInside=false;scheduleHeroAutoplay();}}
+
 function applyHeroBackdrop(index){
 if(!heroBackdrop||!IMAGES[index]||heroBackdrop.dataset.index===String(index))return;
 const firstPaint=!heroBackdrop.dataset.index;heroBackdrop.dataset.index=String(index);
@@ -198,10 +207,10 @@ clearTimeout(backdropTimer);backdropTimer=setTimeout(()=>heroBackdrop.classList.
 document.documentElement.style.setProperty('--spectrum-a','#FFD400');document.documentElement.style.setProperty('--spectrum-b','#FF7A45');
 function navigate(dir){
 if(!heroStarted||isAnimating)return;
-isAnimating=true;
+clearHeroAutoplay();isAnimating=true;
 activeIndex=dir==='next'?(activeIndex+1)%4:(activeIndex+3)%4;
 renderHero();
-setTimeout(()=>isAnimating=false,650);
+setTimeout(()=>{isAnimating=false;scheduleHeroAutoplay();},650);
 }
 function renderHero(){
 carousel.innerHTML='';
@@ -219,12 +228,14 @@ d.classList.add('loading');const skeleton=document.createElement('span');skeleto
 }
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
+autoToggle.onclick=()=>{autoAdvanceUserPaused=!autoAdvanceUserPaused;if(autoAdvanceUserPaused)clearHeroAutoplay();scheduleHeroAutoplay();};
+hero.addEventListener('pointerenter',pauseHeroForPointer);hero.addEventListener('pointerleave',resumeHeroForPointer);hero.addEventListener('focusin',()=>{clearHeroAutoplay();updateAutoToggle();});hero.addEventListener('focusout',event=>{if(!hero.contains(event.relatedTarget))scheduleHeroAutoplay();});document.addEventListener('visibilitychange',()=>{if(document.hidden)clearHeroAutoplay();else scheduleHeroAutoplay();});window.addEventListener('blur',clearHeroAutoplay);window.addEventListener('focus',scheduleHeroAutoplay);
 let swipePointerId=null,swipeStartX=0,swipeStartY=0;
 function resetSwipe(){swipePointerId=null;swipeStartX=0;swipeStartY=0;}
-carousel.addEventListener('pointerdown',event=>{if(!isMobile||event.pointerType==='mouse'||event.target.closest('button,a'))return;swipePointerId=event.pointerId;swipeStartX=event.clientX;swipeStartY=event.clientY;carousel.setPointerCapture?.(event.pointerId);});
-carousel.addEventListener('pointerup',event=>{if(event.pointerId!==swipePointerId)return;const dx=event.clientX-swipeStartX;const dy=event.clientY-swipeStartY;resetSwipe();if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.2||isAnimating)return;event.preventDefault();navigate(dx<0?'next':'prev');});
-carousel.addEventListener('pointercancel',resetSwipe);
-function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});}
+carousel.addEventListener('pointerdown',event=>{if(!isMobile||event.pointerType==='mouse'||event.target.closest('button,a'))return;clearHeroAutoplay();swipePointerId=event.pointerId;swipeStartX=event.clientX;swipeStartY=event.clientY;carousel.setPointerCapture?.(event.pointerId);});
+carousel.addEventListener('pointerup',event=>{if(event.pointerId!==swipePointerId)return;const dx=event.clientX-swipeStartX;const dy=event.clientY-swipeStartY;resetSwipe();if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.2||isAnimating){scheduleHeroAutoplay();return;}event.preventDefault();navigate(dx<0?'next':'prev');});
+carousel.addEventListener('pointercancel',()=>{resetSwipe();scheduleHeroAutoplay();});
+function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');scheduleHeroAutoplay();});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHero,{once:true});else requestAnimationFrame(startHero);
 
 // BOOKS LOGIC
