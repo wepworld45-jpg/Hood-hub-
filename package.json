@@ -1,0 +1,8 @@
+{
+  "name": "vivuhub-landing",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "generate:covers": "python3 tools/generate_cover_manifest.py"
+  }
+}
