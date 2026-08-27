@@ -274,10 +274,10 @@ d.onclick=()=>{bOpen=open?null:i;renderBooks();};
 g.appendChild(d);
 });
 }
-function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;let started=false;const run=()=>{if(started||window.scrollY<1)return;started=true;window.removeEventListener('scroll',run);render();};if(window.scrollY>0)requestAnimationFrame(run);else window.addEventListener('scroll',run,{passive:true});}
+function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;let started=false;const run=()=>{if(started)return;const top=section.getBoundingClientRect().top;if(top>=window.innerHeight)return;started=true;window.removeEventListener('scroll',run);render();};run();window.addEventListener('scroll',run,{passive:true});}
 let bookCoversStarted=false;
 function hydrateBookCovers(){if(bookCoversStarted)return;bookCoversStarted=true;document.querySelectorAll('#bookGrid .card').forEach((card,index)=>loadBookCover(books[index],card.querySelector('[data-book-cover]')));}
-function scheduleBookCovers(){const section=document.getElementById('books');if(!section)return;if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){hydrateBookCovers();observer.disconnect();}},{rootMargin:'0px'});observer.observe(section);}else setTimeout(hydrateBookCovers,3000);}
+function scheduleBookCovers(){const section=document.getElementById('books');if(!section)return;const run=()=>{if(section.getBoundingClientRect().top>=window.innerHeight)return;hydrateBookCovers();window.removeEventListener('scroll',run);};run();window.addEventListener('scroll',run,{passive:true});}
 scheduleShelfWhenVisible(()=>{renderBooks(false);scheduleBookCovers();},'books');
 
 // LIVE API LOGIC
