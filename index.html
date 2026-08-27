@@ -194,8 +194,6 @@ function requestTheme(nextTheme){if(themeLocked||nextTheme===activeTheme)return;
 
 const themePresets={auto:{bg:null,a:'#FFD400',b:'#FF7A45'},'3am':{bg:'#14142D',a:'#8B7CFF',b:'#FFD400'},'12plus':{bg:'#8C6B00',a:'#111',b:'#FFF3B0'},candy:{bg:'#7A234E',a:'#FFB3D1',b:'#FFD400'},mint:{bg:'#0E513A',a:'#8FF0C2',b:'#FFD400'}};
 let activeTheme='auto';try{activeTheme=localStorage.getItem('vivuhub-theme')||'auto';}catch(error){}
-function loadOptionalFonts(){if(document.getElementById('optionalFonts'))return;const link=document.createElement('link');link.id='optionalFonts';link.rel='stylesheet';link.href='https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap';document.head.appendChild(link);}
-function scheduleOptionalFonts(){setTimeout(loadOptionalFonts,2400);}
 function applyTheme(){const theme=themePresets[activeTheme]||themePresets.auto;hero.dataset.theme=activeTheme;hero.style.setProperty('--boot-bg',theme.bg||IMAGES[activeIndex].bg);hero.style.backgroundColor=theme.bg||IMAGES[activeIndex].bg;document.documentElement.style.setProperty('--spectrum-a',theme.a||'#FFD400');document.documentElement.style.setProperty('--spectrum-b',theme.b||'#FF7A45');document.querySelectorAll('[data-theme]').forEach(button=>{const active=button.dataset.theme===activeTheme;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});try{localStorage.setItem('vivuhub-theme',activeTheme);}catch(error){};if(spectrumReady)paintSpectrum();}
 document.querySelectorAll('[data-theme]').forEach(button=>button.onclick=()=>requestTheme(button.dataset.theme));
 function navigate(dir){
@@ -226,7 +224,7 @@ function wakeHeroImages(){if(heroSecondaryStarted)return;heroSecondaryStarted=tr
 function scheduleHeroImages(){window.addEventListener('pointerdown',wakeHeroImages,{once:true,passive:true});window.addEventListener('keydown',wakeHeroImages,{once:true});}
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
-function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});scheduleHeroImages();scheduleOptionalFonts();}
+function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});scheduleHeroImages();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHero,{once:true});else requestAnimationFrame(startHero);
 
 // BOOKS LOGIC
@@ -276,7 +274,7 @@ d.onclick=()=>{bOpen=open?null:i;renderBooks();};
 g.appendChild(d);
 });
 }
-function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;if('IntersectionObserver' in window){let started=false;const observer=new IntersectionObserver(entries=>{if(!started&&entries.some(entry=>entry.isIntersecting)){started=true;render();observer.disconnect();}},{rootMargin:'0px'});observer.observe(section);}else window.addEventListener('scroll',render,{once:true,passive:true});}
+function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;let started=false;const run=()=>{if(started||window.scrollY<1)return;started=true;window.removeEventListener('scroll',run);render();};if(window.scrollY>0)requestAnimationFrame(run);else window.addEventListener('scroll',run,{passive:true});}
 let bookCoversStarted=false;
 function hydrateBookCovers(){if(bookCoversStarted)return;bookCoversStarted=true;document.querySelectorAll('#bookGrid .card').forEach((card,index)=>loadBookCover(books[index],card.querySelector('[data-book-cover]')));}
 function scheduleBookCovers(){const section=document.getElementById('books');if(!section)return;if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){hydrateBookCovers();observer.disconnect();}},{rootMargin:'0px'});observer.observe(section);}else setTimeout(hydrateBookCovers,3000);}
