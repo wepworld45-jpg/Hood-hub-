@@ -223,7 +223,7 @@ carousel.appendChild(d);
 }
 let heroSecondaryStarted=false;
 function wakeHeroImages(){if(heroSecondaryStarted)return;heroSecondaryStarted=true;document.querySelectorAll('.fig img[data-src]').forEach(img=>{img.src=img.dataset.src;img.removeAttribute('data-src');});}
-function scheduleHeroImages(){const delayedStart=()=>setTimeout(wakeHeroImages,900);if(document.readyState==='complete')delayedStart();else window.addEventListener('load',delayedStart,{once:true});window.addEventListener('pointerdown',wakeHeroImages,{once:true,passive:true});window.addEventListener('keydown',wakeHeroImages,{once:true});}
+function scheduleHeroImages(){window.addEventListener('pointerdown',wakeHeroImages,{once:true,passive:true});window.addEventListener('keydown',wakeHeroImages,{once:true});}
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
 function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});scheduleHeroImages();scheduleOptionalFonts();}
@@ -276,7 +276,7 @@ d.onclick=()=>{bOpen=open?null:i;renderBooks();};
 g.appendChild(d);
 });
 }
-function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;if('IntersectionObserver' in window){let started=false;const observer=new IntersectionObserver(entries=>{if(!started&&entries.some(entry=>entry.isIntersecting)){started=true;render();observer.disconnect();}},{rootMargin:'0px 0px 120px'});observer.observe(section);}else window.addEventListener('scroll',render,{once:true,passive:true});}
+function scheduleShelfWhenVisible(render,id){const section=document.getElementById(id);if(!section)return;if('IntersectionObserver' in window){let started=false;const observer=new IntersectionObserver(entries=>{if(!started&&entries.some(entry=>entry.isIntersecting)){started=true;render();observer.disconnect();}},{rootMargin:'0px'});observer.observe(section);}else window.addEventListener('scroll',render,{once:true,passive:true});}
 let bookCoversStarted=false;
 function hydrateBookCovers(){if(bookCoversStarted)return;bookCoversStarted=true;document.querySelectorAll('#bookGrid .card').forEach((card,index)=>loadBookCover(books[index],card.querySelector('[data-book-cover]')));}
 function scheduleBookCovers(){const section=document.getElementById('books');if(!section)return;if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){hydrateBookCovers();observer.disconnect();}},{rootMargin:'0px'});observer.observe(section);}else setTimeout(hydrateBookCovers,3000);}
