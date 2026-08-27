@@ -13,7 +13,7 @@ html{scroll-behavior:smooth}
 .ghost{position:absolute;inset-inline:0;top:18%;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;z-index:2;font-family:'Anton',sans-serif;font-size:clamp(90px,28vw,380px);font-weight:900;color:#fff;line-height:1;text-transform:uppercase;letter-spacing:-.02em;white-space:nowrap}
 .brand{position:absolute;top:24px;left:16px;z-index:60;font-size:12px;font-weight:600;text-transform:uppercase;color:#fff;opacity:.9;letter-spacing:.18em}
 @media(min-width:640px){.brand{left:32px}}
-.carousel{position:absolute;inset:0;z-index:3}
+.carousel{position:absolute;inset:0;z-index:3;touch-action:pan-y;overscroll-behavior-x:contain}
 .fig{position:absolute;aspect-ratio:.6/1;background:transparent;transition:transform 240ms ease,opacity 240ms ease,left 240ms ease;isolation:isolate}.figSkeleton{position:absolute;inset:5% 12% 1%;z-index:0;border-radius:46% 46% 18% 18%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.12);box-shadow:none;opacity:.56;pointer-events:none;transition:opacity 120ms ease}.figSkeleton.is-hidden{opacity:0}.figSkeleton.is-error{opacity:.24}.fig img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;object-position:bottom center;display:block;user-select:none;-webkit-user-drag:none;opacity:0;transform:translateY(2px) scale(.996);transition:opacity 140ms ease,transform 220ms ease}.fig.loaded img{opacity:1;transform:translateY(0) scale(1)}@media(prefers-reduced-motion:reduce){.fig,.fig img{transition:none}#hero::before{animation:none;transform:none}}
 .bottomLeft{position:absolute;bottom:24px;left:16px;z-index:60;max-width:320px}
 @media(min-width:640px){.bottomLeft{bottom:80px;left:96px}}
@@ -22,9 +22,9 @@ html{scroll-behavior:smooth}
 .bLeftDesc{font-size:12px;color:#fff;opacity:.85;line-height:1.6;margin-bottom:16px}
 @media(min-width:640px){.bLeftDesc{font-size:14px;margin-bottom:20px}}
 .navBtns{display:flex;gap:16px}
-.circle{width:48px;height:48px;border-radius:9999px;background:transparent;border:2px solid #fff;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform 150ms,background-color 150ms}
+.circle{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:9999px;background:transparent;border:2px solid #fff;color:#fff;display:grid;place-items:center;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform 150ms ease,background-color 150ms ease,opacity 150ms ease}
 @media(min-width:640px){.circle{width:64px;height:64px}}
-.circle:hover{transform:scale(1.08);background:rgba(255,255,255,.12)}
+@media(hover:hover) and (pointer:fine){.circle:hover{transform:translateY(-2px) scale(1.06);background:rgba(255,255,255,.12)}}.circle:active{transform:scale(.94);background:rgba(255,255,255,.2)}.circle:disabled{opacity:.55;cursor:wait}
 .bottomRight{position:absolute;bottom:24px;right:16px;z-index:60}
 @media(min-width:640px){.bottomRight{bottom:80px;right:40px}}
 .discover{display:flex;align-items:center;gap:8px;font-family:'Anton',sans-serif;font-size:clamp(20px,4vw,56px);font-weight:400;color:#fff;opacity:.95;letter-spacing:-.02em;line-height:1;text-transform:uppercase;text-decoration:none;transition:opacity 200ms}
@@ -215,6 +215,11 @@ carousel.appendChild(d);
 }
 document.getElementById('prevBtn').onclick=()=>navigate('prev');
 document.getElementById('nextBtn').onclick=()=>navigate('next');
+let swipePointerId=null,swipeStartX=0,swipeStartY=0;
+function resetSwipe(){swipePointerId=null;swipeStartX=0;swipeStartY=0;}
+carousel.addEventListener('pointerdown',event=>{if(!isMobile||event.pointerType==='mouse'||event.target.closest('button,a'))return;swipePointerId=event.pointerId;swipeStartX=event.clientX;swipeStartY=event.clientY;carousel.setPointerCapture?.(event.pointerId);});
+carousel.addEventListener('pointerup',event=>{if(event.pointerId!==swipePointerId)return;const dx=event.clientX-swipeStartX;const dy=event.clientY-swipeStartY;resetSwipe();if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.2||isAnimating)return;event.preventDefault();navigate(dx<0?'next':'prev');});
+carousel.addEventListener('pointercancel',resetSwipe);
 function startHero(){if(heroStarted)return;heroStarted=true;renderHero();requestAnimationFrame(()=>{hero.classList.add('ready');hero.removeAttribute('aria-busy');});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHero,{once:true});else requestAnimationFrame(startHero);
 
